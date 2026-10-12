@@ -1,7 +1,23 @@
 @extends('layouts.app', ['heading' => 'Catat Kunjungan — Data Siswa yang Berkunjung'])
 
 @section('content')
-<div class="space-y-6">
+<!-- Hero Section Admin Full Width: Menempel Langsung Tanpa Space di Atasnya -->
+<div class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-md">
+    <div class="px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 dark:bg-emerald-800/80 text-white dark:text-emerald-200 border border-white/25 dark:border-emerald-600/40 mb-2 shadow-xs backdrop-blur-md">
+                <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+                Manajemen Data Kunjungan
+            </span>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white dark:text-emerald-50">Catat Kunjungan & Riwayat Medis</h2>
+            <p class="mt-1.5 text-sm text-emerald-50 dark:text-emerald-200/90 leading-relaxed">
+                Total tercatat {{ $totalVisits }} kunjungan ({{ $todayCount }} kunjungan hari ini).
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="p-4 sm:p-8 space-y-6 flex-1">
     @if (session('success'))
         <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between">
             <span>✓ {{ session('success') }}</span>
@@ -20,26 +36,18 @@
         </div>
     @endif
 
-    <!-- Top Action Bar & Filter -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-        <div>
-            <h2 class="text-xl font-bold text-slate-800">Data Siswa yang Berkunjung</h2>
-            <p class="text-xs text-slate-500 mt-1">Total tercatat {{ $totalVisits }} kunjungan ({{ $todayCount }} kunjungan hari ini).</p>
-        </div>
-    </div>
-
     <!-- Filter & Pencarian Box -->
     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
         <form method="GET" action="{{ route('kunjungan.index') }}" class="space-y-3">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <!-- Pencarian Kata Kunci -->
                 <div class="lg:col-span-2">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama siswa, NIS, atau keluhan sakit..." class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama siswa, NIS, atau keluhan sakit..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
                 </div>
 
                 <!-- Filter Status -->
                 <div>
-                    <select name="status" class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600">
+                    <select name="status" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
                         <option value="">-- Semua Status --</option>
                         <option value="ditangani" @selected(request('status') === 'ditangani')>Ditangani di UKS</option>
                         <option value="dirujuk" @selected(request('status') === 'dirujuk')>Dirujuk ke Faskes</option>
@@ -50,7 +58,7 @@
                 <!-- Action Buttons -->
                 <div class="flex gap-2">
                     <button type="submit" class="w-full shrink-0 px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold transition">
-                        Cari / Filter
+                        Cari
                     </button>
                     @if (request()->hasAny(['q', 'status', 'period', 'date', 'month']))
                         <a href="{{ route('kunjungan.index') }}" class="shrink-0 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold transition flex items-center justify-center" title="Reset filter">
@@ -78,38 +86,37 @@
                 <!-- Filter Per Hari -->
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Per Hari (Tanggal)</label>
-                    <input type="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()" class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600">
+                    <input type="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600">
                 </div>
 
                 <!-- Filter Per Bulan -->
                 <div>
                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Per Bulan</label>
-                    <input type="month" name="month" value="{{ request('month') }}" onchange="this.form.submit()" class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600">
+                    <input type="month" name="month" value="{{ request('month') }}" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600">
                 </div>
             </div>
         </form>
     </div>
 
     <!-- Tabel Data Siswa yang Berkunjung -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+    <div class="rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">
+                <thead class="bg-slate-100 dark:bg-slate-800/80 border-b-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 uppercase tracking-wider font-bold">
                     <tr>
                         <th class="px-4 py-4 w-12 text-center">No</th>
-                        <th class="px-4 py-4">Waktu / Tanggal</th>
-                        <th class="px-4 py-4">Nama Siswa</th>
+                        <th class="px-4 py-4">Tanggal & Jam</th>
+                        <th class="px-4 py-4 min-w-[170px]">Nama Siswa</th>
                         <th class="px-4 py-4">Kelas</th>
-
                         <th class="px-4 py-4">Keluhan & Gejala</th>
                         <th class="px-4 py-4">Tindakan Awal</th>
                         <th class="px-4 py-4">Status</th>
                         <th class="px-4 py-4 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-300 dark:divide-slate-800">
                     @forelse ($visits as $index => $visit)
-                        <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
                             <td class="px-4 py-4 whitespace-nowrap text-center font-bold text-slate-500 dark:text-slate-400 text-xs">
                                 {{ method_exists($visits, 'firstItem') && $visits->firstItem() ? $visits->firstItem() + $index : $loop->iteration }}
                             </td>
@@ -122,7 +129,7 @@
                                 </span>
                             </td>
 
-                            <td class="px-4 py-4">
+                            <td class="px-4 py-4 whitespace-nowrap min-w-[170px]">
                                 <span class="font-bold text-slate-900 dark:text-slate-100 block">
                                     {{ $visit->student->name ?? 'Siswa Tidak Diketahui' }}
                                 </span>
@@ -131,8 +138,6 @@
                             <td class="px-4 py-4 whitespace-nowrap text-slate-600 dark:text-slate-400 font-medium">
                                 {{ $visit->student->class_name ?? '-' }}
                             </td>
-
-
 
                             <td class="px-4 py-4" style="max-width: 200px;">
                                 <p class="text-slate-800 dark:text-slate-200 font-medium text-xs leading-relaxed line-clamp-2" title="{{ $visit->complaint }}">
@@ -157,7 +162,7 @@
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-800">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-sky-500"></span> Dipulangkan
+                                        <span class="h-1.5 w-1.5 rounded-full bg-sky-500"></span> Diizinkan Pulang
                                     </span>
                                 @endif
                             </td>
@@ -179,11 +184,11 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
+                            <td colspan="8" class="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
                                 <p class="text-base font-semibold text-slate-600 dark:text-slate-300">Tidak ada data siswa berkunjung</p>
                                 <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Gunakan tombol di bawah untuk mencatat data kunjungan siswa baru.</p>
                                 <button type="button" onclick="openCatatModal()" class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-teal-700 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-teal-800 transition cursor-pointer">
-                                    + Catat Kunjungan Baru
+                                    Catat Kunjungan Baru
                                 </button>
                             </td>
                         </tr>

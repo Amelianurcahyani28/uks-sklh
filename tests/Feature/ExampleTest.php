@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Student;
+use App\Models\UksVisit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -33,6 +34,31 @@ class ExampleTest extends TestCase
         $response = $this->get('/ringkasan');
 
         $response->assertOk()->assertViewIs('public.ringkasan');
+    }
+
+    public function test_guest_can_filter_ringkasan_by_status(): void
+    {
+        $student = Student::create([
+            'name' => 'Pasien Rujukan',
+            'nis' => 'UKS-999',
+            'class_name' => 'VIII A',
+            'gender' => 'L',
+        ]);
+
+        UksVisit::create([
+            'student_id' => $student->id,
+            'visit_date' => now()->subMonth()->toDateString(),
+            'complaint' => 'Sakit perut hebat',
+            'initial_treatment' => 'Diberi obat',
+            'status' => 'dirujuk',
+        ]);
+
+        $response = $this->get('/ringkasan?filter=month&status=dirujuk');
+
+        $response->assertOk()
+            ->assertViewIs('public.ringkasan')
+            ->assertSee('Pasien Rujukan')
+            ->assertSee('Sakit perut hebat');
     }
 
     public function test_guest_can_view_public_kunjungan(): void

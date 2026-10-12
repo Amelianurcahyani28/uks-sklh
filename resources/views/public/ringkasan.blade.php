@@ -1,23 +1,79 @@
 @extends('layouts.public', ['title' => 'Ringkasan & Data UKS'])
 
 @section('content')
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
-    <!-- Header Banner Ringkasan Modern & Bersih -->
-    <section class="rounded-3xl bg-gradient-to-r from-teal-800 via-teal-700 to-slate-900 p-8 sm:p-12 text-white shadow-lg relative overflow-hidden">
-        <div class="relative z-10 max-w-3xl space-y-4">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-teal-500/20 text-teal-200 border border-teal-400/30">
-                Transparansi & Rekapitulasi
-            </span>
-            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Ringkasan & Statistik Data UKS</h1>
-            <p class="text-sm sm:text-base text-teal-100/90 leading-relaxed font-normal">
-                Data terkini mengenai aktivitas pelayanan kesehatan siswa di sekolah. Klik salah satu kartu metrik di bawah untuk menampilkan data riwayat terkait.
-            </p>
+<main class="space-y-16 pb-16">
+    <!-- Hero Section Full Width: Menempel langsung di bawah navbar seperti Beranda -->
+    <section class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-xl overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative z-10">
+                <!-- Sisi Kiri: Teks & Filter Cepat -->
+                <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-emerald-800/80 border border-white/25 dark:border-emerald-600/40 text-white dark:text-emerald-200 text-xs font-bold shadow-sm backdrop-blur-md">
+                        <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+                        <span>Transparansi & Rekapitulasi Data</span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-black text-white dark:text-emerald-50 tracking-tight leading-tight drop-shadow-sm">
+                        Ringkasan & Statistik Data UKS
+                    </h1>
+
+                    <p class="text-sm sm:text-base text-emerald-50 dark:text-emerald-200/90 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+                        Data terkini mengenai aktivitas pelayanan kesehatan siswa di sekolah. Klik salah satu metrik atau pilih tab di bawah untuk menyaring riwayat terkait.
+                    </p>
+
+                    <!-- Quick Navigation / Filters Tabs -->
+                    <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 text-xs font-semibold">
+                        <a href="{{ route('public.ringkasan', ['filter' => 'today']) }}" class="px-4 py-2.5 rounded-xl {{ $activeFilter === 'today' ? 'bg-amber-400 text-slate-950 font-extrabold shadow-md' : 'bg-white/15 hover:bg-white/25 text-white border border-white/25' }} transition backdrop-blur-md shadow-sm">
+                            Hari Ini ({{ $todayVisits }})
+                        </a>
+                        <a href="{{ route('public.ringkasan', ['filter' => 'all']) }}" class="px-4 py-2.5 rounded-xl {{ $activeFilter === 'all' ? 'bg-amber-400 text-slate-950 font-extrabold shadow-md' : 'bg-white/15 hover:bg-white/25 text-white border border-white/25' }} transition backdrop-blur-md shadow-sm">
+                            Total Riwayat ({{ $totalVisits }})
+                        </a>
+                        <a href="{{ route('public.ringkasan', ['filter' => 'students']) }}" class="px-4 py-2.5 rounded-xl {{ $activeFilter === 'students' ? 'bg-amber-400 text-slate-950 font-extrabold shadow-md' : 'bg-white/15 hover:bg-white/25 text-white border border-white/25' }} transition backdrop-blur-md shadow-sm">
+                            Siswa Terdaftar ({{ $studentCount }})
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sisi Kanan: Showcase Card ala Beranda -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="rounded-3xl border border-white/20 bg-slate-900/60 backdrop-blur-xl p-6 md:p-8 shadow-2xl text-white">
+                        <div class="flex items-center justify-between pb-4 border-b border-white/15">
+                            <div class="flex items-center space-x-3">
+                                <img src="{{ asset('images/logo-pmr.png') }}" alt="Logo PMR SMKN 1 Ciomas" class="h-11 w-11 rounded-2xl object-contain bg-white/20 p-1 border border-white/30 shadow-inner">
+                                <div>
+                                    <h3 class="text-sm font-bold text-white tracking-wide">Statistik Real-Time</h3>
+                                    <p class="text-[11px] text-teal-200">SMKN 1 Ciomas</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Terverifikasi
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 pt-4">
+                            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+                                <div class="text-xl font-black text-amber-300">{{ $todayVisits }} Pasien</div>
+                                <div class="text-[11px] text-slate-300 mt-0.5">Kunjungan Hari Ini</div>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+                                <div class="text-xl font-black text-teal-300">{{ $totalVisits }} Data</div>
+                                <div class="text-[11px] text-slate-300 mt-0.5">Total Riwayat</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-teal-100/80">
+                            <span>Siswa Aktif Terdaftar</span>
+                            <span class="font-semibold text-white">{{ $studentCount }} Siswa</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
     </section>
 
-    <!-- 3 Kartu Metrik Utama (Dapat Diklik untuk Membuka Datanya) -->
-    <section class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <!-- Konten Ringkasan Dalam Container Rapi -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+        <!-- 3 Kartu Metrik Utama (Dapat Diklik untuk Membuka Datanya) -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <!-- 1. Kunjungan Hari Ini -->
         <a href="{{ route('public.ringkasan', ['filter' => 'today']) }}" 
            class="group rounded-2xl border p-6 transition-all duration-200 shadow-xs block {{ $activeFilter === 'today' ? 'border-teal-500 dark:border-teal-400 bg-teal-500/10 dark:bg-teal-950/70 ring-2 ring-teal-500/80 dark:ring-teal-400/80 shadow-md' : 'border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900/90 hover:border-teal-500 dark:hover:border-teal-500/60 hover:shadow-md' }}">
@@ -81,56 +137,51 @@
 
     <!-- Bagian Filter Status Kunjungan (Hanya jika bukan filter students) -->
     @if ($activeFilter !== 'students')
-        <section class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs space-y-4">
+        <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-6 shadow-sm space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                    <h3 class="text-sm font-bold text-slate-800">Distribusi Status Penanganan Kunjungan</h3>
-                    <p class="text-xs text-slate-500">Pilih salah satu status di bawah untuk menyaring data pasien.</p>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Distribusi Status Penanganan Kunjungan</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Pilih salah satu status di bawah untuk menyaring data pasien (klik lagi untuk membatalkan).</p>
                 </div>
-                @if ($activeStatus)
-                    <a href="{{ route('public.ringkasan', ['filter' => $activeFilter]) }}" class="text-xs text-rose-600 font-semibold hover:underline">
-                        ✕ Hapus Filter Status
-                    </a>
-                @endif
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <a href="{{ route('public.ringkasan', ['filter' => $activeFilter, 'status' => 'ditangani']) }}" 
-                   class="p-4 rounded-xl border transition {{ $activeStatus === 'ditangani' ? 'bg-emerald-50 border-emerald-500 ring-2 ring-emerald-500' : 'border-slate-200 hover:bg-slate-50' }}">
+                <a href="{{ route('public.ringkasan', ['filter' => ($activeFilter === 'today' ? 'today' : 'all'), 'status' => ($activeStatus === 'ditangani' ? null : 'ditangani')]) }}" 
+                   class="p-4 rounded-xl border-2 transition shadow-2xs {{ $activeStatus === 'ditangani' ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 ring-2 ring-emerald-500/20' : 'bg-slate-50/60 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/80 hover:bg-emerald-50/40 hover:border-emerald-400' }}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-emerald-800">Ditangani di UKS</span>
-                        <span class="text-lg font-black text-emerald-800">{{ $statusStats['ditangani'] }}</span>
+                        <span class="text-xs font-bold text-emerald-800 dark:text-emerald-300">Ditangani di UKS</span>
+                        <span class="text-lg font-black text-emerald-800 dark:text-emerald-300">{{ $statusStats['ditangani'] }}</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-1">Selesai penanganan langsung di sekolah</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Selesai penanganan langsung di sekolah</p>
                 </a>
 
-                <a href="{{ route('public.ringkasan', ['filter' => $activeFilter, 'status' => 'dirujuk']) }}" 
-                   class="p-4 rounded-xl border transition {{ $activeStatus === 'dirujuk' ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-500' : 'border-slate-200 hover:bg-slate-50' }}">
+                <a href="{{ route('public.ringkasan', ['filter' => ($activeFilter === 'today' ? 'today' : 'all'), 'status' => ($activeStatus === 'dirujuk' ? null : 'dirujuk')]) }}" 
+                   class="p-4 rounded-xl border-2 transition shadow-2xs {{ $activeStatus === 'dirujuk' ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-500 ring-2 ring-amber-500/20' : 'bg-slate-50/60 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/80 hover:bg-amber-50/40 hover:border-amber-400' }}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-amber-800">Dirujuk ke Faskes</span>
-                        <span class="text-lg font-black text-amber-800">{{ $statusStats['dirujuk'] }}</span>
+                        <span class="text-xs font-bold text-amber-800 dark:text-amber-300">Dirujuk ke Faskes</span>
+                        <span class="text-lg font-black text-amber-800 dark:text-amber-300">{{ $statusStats['dirujuk'] }}</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-1">Butuh penanganan lanjut dokter/Puskesmas</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Butuh penanganan lanjut dokter/Puskesmas</p>
                 </a>
 
-                <a href="{{ route('public.ringkasan', ['filter' => $activeFilter, 'status' => 'pulang']) }}" 
-                   class="p-4 rounded-xl border transition {{ $activeStatus === 'pulang' ? 'bg-sky-50 border-sky-500 ring-2 ring-sky-500' : 'border-slate-200 hover:bg-slate-50' }}">
+                <a href="{{ route('public.ringkasan', ['filter' => ($activeFilter === 'today' ? 'today' : 'all'), 'status' => ($activeStatus === 'pulang' ? null : 'pulang')]) }}" 
+                   class="p-4 rounded-xl border-2 transition shadow-2xs {{ $activeStatus === 'pulang' ? 'bg-sky-50 dark:bg-sky-950/60 border-sky-500 ring-2 ring-sky-500/20' : 'bg-slate-50/60 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/80 hover:bg-sky-50/40 hover:border-sky-400' }}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-sky-800">Diizinkan Pulang</span>
-                        <span class="text-lg font-black text-sky-800">{{ $statusStats['pulang'] }}</span>
+                        <span class="text-xs font-bold text-sky-800 dark:text-sky-300">Diizinkan Pulang</span>
+                        <span class="text-lg font-black text-sky-800 dark:text-sky-300">{{ $statusStats['pulang'] }}</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 mt-1">Dijemput wali untuk istirahat rumah</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Dijemput wali untuk istirahat rumah</p>
                 </a>
             </div>
         </section>
     @endif
 
     <!-- Data Display Section (Tabel Kunjungan atau Tabel Siswa) -->
-    <section class="space-y-6">
+    <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-sm overflow-hidden">
         <!-- Bar Pencarian & Judul Data Aktif -->
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <div>
-                <h3 class="text-base font-bold text-slate-900">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">
                     @if ($activeFilter === 'students')
                         Daftar Siswa Terdaftar
                     @elseif ($activeFilter === 'today')
@@ -141,7 +192,7 @@
                         Seluruh Riwayat Kunjungan UKS
                     @endif
                 </h3>
-                <p class="text-xs text-slate-500 mt-0.5">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                     @if ($activeFilter === 'students')
                         Menampilkan database siswa yang tercatat di sistem UKS.
                     @else
@@ -156,12 +207,12 @@
                 @if ($activeStatus)
                     <input type="hidden" name="status" value="{{ $activeStatus }}">
                 @endif
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $activeFilter === 'students' ? 'Cari nama, kelas...' : 'Cari siswa atau keluhan...' }}" class="rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600 w-full sm:w-64 flex-1">
-                <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold transition shrink-0">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $activeFilter === 'students' ? 'Cari nama, kelas...' : 'Cari siswa atau keluhan...' }}" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 w-full sm:w-64 flex-1 transition shadow-xs">
+                <button type="submit" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 dark:bg-teal-600 dark:hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition shrink-0">
                     Cari
                 </button>
                 @if (request()->filled('q'))
-                    <a href="{{ route('public.ringkasan', ['filter' => $activeFilter, 'status' => $activeStatus]) }}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold transition shrink-0">
+                    <a href="{{ route('public.ringkasan', ['filter' => $activeFilter, 'status' => $activeStatus]) }}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition shrink-0">
                         ✕
                     </a>
                 @endif
@@ -169,151 +220,205 @@
         </div>
 
         <!-- Tabel Konten -->
-        <div class="rounded-2xl border border-slate-200/90 bg-white shadow-xs overflow-hidden">
-            @if ($activeFilter === 'students')
-                <!-- Tabel Siswa Terdaftar -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-                            <tr>
-
-                                <th class="px-6 py-4">Nama Lengkap Siswa</th>
-                                <th class="px-6 py-4">Kelas</th>
-                                <th class="px-6 py-4">Jenis Kelamin</th>
-                                <th class="px-6 py-4 text-center">Riwayat Kunjungan</th>
+        @if ($activeFilter === 'students')
+            <!-- Tabel Siswa Terdaftar -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 dark:bg-slate-800/80 border-b-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 uppercase tracking-wider font-bold">
+                        <tr>
+                            <th class="px-5 py-4 w-12 text-center border-b-2 border-slate-300 dark:border-slate-700">No</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">NIS</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Nama Lengkap Siswa</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Kelas</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Jenis Kelamin</th>
+                            <th class="px-5 py-4 text-center border-b-2 border-slate-300 dark:border-slate-700">Riwayat Kunjungan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                        @forelse ($studentsData as $index => $student)
+                            <tr class="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
+                                <td class="px-5 py-4 whitespace-nowrap text-center font-bold text-slate-600 dark:text-slate-400 text-xs border-b border-slate-200 dark:border-slate-800">
+                                    {{ method_exists($studentsData, 'firstItem') && $studentsData->firstItem() ? $studentsData->firstItem() + $index : $loop->iteration }}
+                                </td>
+                                <td class="px-5 py-4 font-mono font-medium text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                                    {{ $student->nis }}
+                                </td>
+                                <td class="px-5 py-4 font-bold text-slate-900 dark:text-white text-sm border-b border-slate-200 dark:border-slate-800">
+                                    {{ $student->name }}
+                                </td>
+                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+                                    <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md text-slate-700 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
+                                        Kelas {{ $student->class_name }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+                                    @if ($student->gender === 'L')
+                                        <span class="text-blue-700 dark:text-blue-400 font-semibold">Laki-laki</span>
+                                    @else
+                                        <span class="text-rose-700 dark:text-rose-400 font-semibold">Perempuan</span>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-4 text-center border-b border-slate-200 dark:border-slate-800">
+                                    <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold {{ $student->visits_count > 0 ? 'bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700' }}">
+                                        {{ $student->visits_count }} kali kunjungan
+                                    </span>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse ($studentsData as $student)
-                                <tr class="hover:bg-slate-50/60 transition">
-                                    <td class="px-6 py-4 font-mono font-medium text-slate-600">
-                                        {{ $student->nis }}
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-slate-900 text-sm">
-                                        {{ $student->name }}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="bg-slate-100 px-2.5 py-1 rounded-md text-slate-700 font-semibold">
-                                            Kelas {{ $student->class_name }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        @if ($student->gender === 'L')
-                                            <span class="text-blue-700 font-medium">Laki-laki</span>
-                                        @else
-                                            <span class="text-rose-700 font-medium">Perempuan</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold {{ $student->visits_count > 0 ? 'bg-teal-50 text-teal-700 border border-teal-200' : 'bg-slate-100 text-slate-400' }}">
-                                            {{ $student->visits_count }} kali kunjungan
-                                        </span>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center text-slate-400">
-                                        Tidak ada data siswa ditemukan.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                @if ($studentsData && $studentsData->hasPages())
-                    <div class="p-4 border-t border-slate-100 bg-slate-50/50">
-                        {{ $studentsData->links() }}
-                    </div>
-                @endif
-            @else
-                <!-- Tabel Kunjungan Siswa -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
+                        @empty
                             <tr>
-                                <th class="px-6 py-4 w-12 text-center">No</th>
-                                <th class="px-6 py-4">Tanggal & Jam</th>
-                                <th class="px-6 py-4">Siswa Pasien</th>
-                                <th class="px-6 py-4">Kelas</th>
-
-                                <th class="px-6 py-4">Keluhan Sakit</th>
-                                <th class="px-6 py-4">Tindakan Awal</th>
-                                <th class="px-6 py-4">Status</th>
+                                <td colspan="6" class="px-5 py-12 text-center text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                                    Tidak ada data siswa ditemukan.
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse ($visitsData as $index => $visit)
-                                <tr class="hover:bg-slate-50/60 transition">
-                                    <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-500 text-xs">
-                                        {{ method_exists($visitsData, 'firstItem') && $visitsData->firstItem() ? $visitsData->firstItem() + $index : $loop->iteration }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="font-bold text-slate-800 block">
-                                            {{ $visit->visit_date ? $visit->visit_date->format('d/m/Y') : '-' }}
-                                        </span>
-                                        <span class="text-[11px] text-slate-400">
-                                            {{ $visit->created_at ? $visit->created_at->format('H:i') : '' }} WIB
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span class="font-bold text-slate-900 block text-sm">
-                                            {{ $visit->student->name ?? 'Siswa' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-slate-600 font-medium text-sm">
-                                        {{ $visit->student->class_name ?? '-' }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-block bg-slate-100 text-slate-700 text-xs font-mono font-semibold px-2.5 py-1 rounded-lg">
-                                            {{ $visit->student->nis ?? '-' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4" style="max-width: 200px;">
-                                        <p class="text-slate-800 dark:text-slate-200 font-medium text-xs leading-relaxed line-clamp-2" title="{{ $visit->complaint }}">
-                                            {{ $visit->complaint }}
-                                        </p>
-                                    </td>
-                                    <td class="px-6 py-4" style="max-width: 180px;">
-                                        <p class="text-slate-600 dark:text-slate-400 text-xs leading-relaxed line-clamp-2" title="{{ $visit->initial_treatment }}">
-                                            {{ $visit->initial_treatment ?: '-' }}
-                                        </p>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if ($visit->status === 'ditangani')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                Ditangani di UKS
-                                            </span>
-                                        @elseif ($visit->status === 'dirujuk')
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                                                Dirujuk ke Faskes
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">
-                                                Diizinkan Pulang
-                                            </span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="8" class="px-6 py-12 text-center text-slate-400">
-                                        <p class="text-sm font-semibold text-slate-600">Belum ada catatan kunjungan untuk filter ini.</p>
-                                        <p class="text-xs text-slate-400 mt-1">Gunakan formulir kunjungan untuk menambahkan data baru.</p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-                @if ($visitsData && $visitsData->hasPages())
-                    <div class="p-4 border-t border-slate-100 bg-slate-50/50">
-                        {{ $visitsData->links() }}
-                    </div>
-                @endif
+            @if ($studentsData && $studentsData->hasPages())
+                <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40">
+                    {{ $studentsData->links() }}
+                </div>
             @endif
-        </div>
+        @else
+            <!-- Tabel Kunjungan Siswa -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 dark:bg-slate-800 border-b-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 uppercase tracking-wider font-bold">
+                        <tr>
+                            <th class="px-5 py-4 w-12 text-center border-b-2 border-slate-300 dark:border-slate-700">No</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Tanggal & Jam</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Siswa Pasien</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Kelas</th>
+                            <th class="px-5 py-4 text-center border-b-2 border-slate-300 dark:border-slate-700">Total Kunjungan</th>
+
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Keluhan Sakit</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Tindakan Awal</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                        @forelse ($visitsData as $index => $visit)
+                            <tr class="border-b border-slate-200 dark:border-slate-800 hover:bg-teal-50/20 dark:hover:bg-slate-800/60 transition">
+                                <td class="px-5 py-4 whitespace-nowrap text-center font-bold text-slate-600 dark:text-slate-400 text-xs border-b border-slate-200 dark:border-slate-800">
+                                    {{ method_exists($visitsData, 'firstItem') && $visitsData->firstItem() ? $visitsData->firstItem() + $index : $loop->iteration }}
+                                </td>
+                                <td class="px-5 py-4 whitespace-nowrap border-b border-slate-200 dark:border-slate-800">
+                                    <span class="font-bold text-slate-900 dark:text-white block">
+                                        {{ $visit->visit_date ? $visit->visit_date->format('d/m/Y') : '-' }}
+                                    </span>
+                                    <span class="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
+                                        {{ $visit->created_at ? $visit->created_at->format('H:i') : '' }} WIB
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+                                    <span class="font-bold text-slate-900 dark:text-white block text-sm">
+                                        {{ $visit->student->name ?? 'Siswa' }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4 whitespace-nowrap text-slate-700 dark:text-slate-300 font-medium text-sm border-b border-slate-200 dark:border-slate-800">
+                                    {{ $visit->student->class_name ?? '-' }}
+                                </td>
+                                <td class="px-5 py-4 whitespace-nowrap text-center border-b border-slate-200 dark:border-slate-800">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800" title="Total kunjungan siswa ke UKS">
+                                        {{ $visit->student->visits_count ?? 1 }} kali
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800" style="max-width: 200px;">
+                                    <p class="text-slate-800 dark:text-slate-200 font-medium text-xs leading-relaxed line-clamp-2" title="{{ $visit->complaint }}">
+                                        {{ $visit->complaint }}
+                                    </p>
+                                </td>
+                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800" style="max-width: 180px;">
+                                    <p class="text-slate-600 dark:text-slate-400 text-xs leading-relaxed line-clamp-2" title="{{ $visit->initial_treatment }}">
+                                        {{ $visit->initial_treatment ?: '-' }}
+                                    </p>
+                                </td>
+                                <td class="px-5 py-4 whitespace-nowrap border-b border-slate-200 dark:border-slate-800">
+                                    @if ($visit->status === 'ditangani')
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800">
+                                            Ditangani di UKS
+                                        </span>
+                                    @elseif ($visit->status === 'dirujuk')
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800">
+                                            Dirujuk ke Faskes
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-300 dark:bg-sky-950/60 dark:text-sky-300 dark:border-sky-800">
+                                            Diizinkan Pulang
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="px-5 py-12 text-center text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                                    <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">Belum ada catatan kunjungan untuk filter ini.</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Gunakan formulir kunjungan untuk menambahkan data baru.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if ($visitsData && $visitsData->hasPages())
+                <div class="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40">
+                    {{ $visitsData->links() }}
+                </div>
+            @endif
+        @endif
     </section>
+    </div>
 </main>
+
+<style>
+    /* Explicit crisp borders for Ringkasan tables */
+    .overflow-x-auto table {
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        width: 100% !important;
+        border: 2px solid #94a3b8 !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+    }
+    .overflow-x-auto table th {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+        font-weight: 800 !important;
+        font-size: 11.5px !important;
+        border-bottom: 2.5px solid #64748b !important;
+        padding: 14px 16px !important;
+    }
+    .overflow-x-auto table td {
+        border-bottom: 1.5px solid #94a3b8 !important;
+        padding: 14px 16px !important;
+    }
+    .overflow-x-auto table tbody tr:last-child td {
+        border-bottom: none !important;
+    }
+    .overflow-x-auto table tbody tr:nth-child(even) td {
+        background-color: #f8fafc !important;
+    }
+    .overflow-x-auto table tbody tr:hover td {
+        background-color: #e2e8f0 !important;
+    }
+    html.dark .overflow-x-auto table {
+        border-color: #334155 !important;
+    }
+    html.dark .overflow-x-auto table th {
+        background-color: #0f172a !important;
+        color: #e2e8f0 !important;
+        border-bottom-color: #475569 !important;
+    }
+    html.dark .overflow-x-auto table td {
+        border-bottom-color: #334155 !important;
+    }
+    html.dark .overflow-x-auto table tbody tr:nth-child(even) td {
+        background-color: rgba(15, 23, 42, 0.4) !important;
+    }
+    html.dark .overflow-x-auto table tbody tr:hover td {
+        background-color: rgba(30, 41, 59, 0.7) !important;
+    }
+</style>
 @endsection

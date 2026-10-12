@@ -42,6 +42,15 @@ class KunjunganController extends Controller
         $status = $request->query('status');
         $keyword = trim((string) $request->query('q', ''));
 
+        // Jika filter status dipilih dan tidak ada data pada hari ini dengan status tersebut,
+        // alihkan cakupan tanggal ke 'all' agar seluruh data dengan status yang dipilih tetap tampil
+        if ($status && in_array($status, ['ditangani', 'dirujuk', 'pulang']) && $filter === 'today') {
+            $todayWithStatus = UksVisit::whereDate('visit_date', $today)->where('status', $status)->count();
+            if ($todayWithStatus === 0) {
+                $filter = 'all';
+            }
+        }
+
         $studentsData = null;
         $visitsData = null;
 
@@ -55,7 +64,12 @@ class KunjunganController extends Controller
             }
             $studentsData = $studentQuery->paginate(8)->withQueryString();
         } else {
-            $visitQuery = UksVisit::with(['student', 'handler'])->latest('visit_date')->latest('id');
+            $visitQuery = UksVisit::with([
+                'student' => function ($q) {
+                    $q->withCount('visits');
+                },
+                'handler',
+            ])->latest('visit_date')->latest('id');
 
             if ($filter === 'today') {
                 $visitQuery->whereDate('visit_date', $today);
@@ -112,7 +126,7 @@ class KunjunganController extends Controller
         $statusDirujuk = UksVisit::where('status', 'dirujuk')->count();
         $statusPulang = UksVisit::where('status', 'pulang')->count();
 
-        $filter = $request->query('filter', 'month');
+        $filter = $request->query('filter', 'all');
         $status = $request->query('status');
         $keyword = trim((string) $request->query('q', ''));
 
@@ -134,7 +148,7 @@ class KunjunganController extends Controller
 
             if ($filter === 'today') {
                 $visitQuery->whereDate('visit_date', $today);
-            } elseif ($filter === 'month') {
+            } elseif ($filter === 'month' && ! $status) {
                 $visitQuery->whereBetween('visit_date', [$monthStart, $today]);
             }
 
@@ -178,7 +192,12 @@ class KunjunganController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = UksVisit::with(['student', 'handler'])->latest('visit_date')->latest('id');
+        $query = UksVisit::with([
+            'student' => function ($q) {
+                $q->withCount('visits');
+            },
+            'handler',
+        ])->latest('visit_date')->latest('id');
 
         // Filter status
         if ($request->filled('status')) {
@@ -192,7 +211,7 @@ class KunjunganController extends Controller
             $parts = explode('-', $request->query('month'));
             if (count($parts) === 2) {
                 $query->whereYear('visit_date', $parts[0])
-                      ->whereMonth('visit_date', $parts[1]);
+                    ->whereMonth('visit_date', $parts[1]);
             }
         } elseif ($request->query('period') === 'today') {
             $query->whereDate('visit_date', now()->toDateString());
@@ -239,6 +258,7 @@ class KunjunganController extends Controller
         $validated = $request->validate([
             'student_id' => ['nullable', 'exists:students,id'],
             'student_name' => ['required_without:student_id', 'nullable', 'string', 'max:255'],
+            'nis' => ['nullable', 'string', 'max:50'],
             'class_name' => ['nullable', 'string', 'max:50'],
             'gender' => ['nullable', 'in:L,P'],
             'visit_date' => ['required', 'date'],
@@ -258,7 +278,7 @@ class KunjunganController extends Controller
             if (! $student) {
                 $student = Student::create([
                     'name' => $inputName !== '' ? $inputName : 'Siswa UKS',
-                    'nis' => 'UKS-'.strtoupper(substr(uniqid(), -4)),
+                    'nis' => $request->filled('nis') ? trim((string) $request->input('nis')) : 'UKS-'.strtoupper(substr(uniqid(), -4)),
                     'class_name' => $request->input('class_name', '-') ?: '-',
                     'gender' => $request->input('gender', 'L') ?: 'L',
                 ]);

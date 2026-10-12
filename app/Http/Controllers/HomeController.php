@@ -49,7 +49,7 @@ class HomeController extends Controller
         $statusDirujuk = UksVisit::where('status', 'dirujuk')->count();
         $statusPulang = UksVisit::where('status', 'pulang')->count();
 
-        $filter = $request->query('filter', 'month');
+        $filter = $request->query('filter', 'all');
         $status = $request->query('status');
         $keyword = trim((string) $request->query('q', ''));
 
@@ -60,17 +60,19 @@ class HomeController extends Controller
             $studentQuery = Student::withCount('visits')->latest('id');
             if ($keyword !== '') {
                 $studentQuery->where(function ($q) use ($keyword) {
-                $q->where('name', 'like', "%{$keyword}%")
+                    $q->where('name', 'like', "%{$keyword}%")
                         ->orWhere('class_name', 'like', "%{$keyword}%");
                 });
             }
             $studentsData = $studentQuery->paginate(12)->withQueryString();
         } else {
-            $visitQuery = UksVisit::with('student')->latest('visit_date')->latest('id');
+            $visitQuery = UksVisit::with(['student' => function ($q) {
+                $q->withCount('visits');
+            }])->latest('visit_date')->latest('id');
 
             if ($filter === 'today') {
                 $visitQuery->whereDate('visit_date', $today);
-            } elseif ($filter === 'month') {
+            } elseif ($filter === 'month' && ! $status) {
                 $visitQuery->whereBetween('visit_date', [$monthStart, $today]);
             }
 
@@ -121,7 +123,9 @@ class HomeController extends Controller
         $filter = $request->query('filter');
         $status = $request->query('status');
 
-        $query = UksVisit::with('student')->orderByDesc('visit_date')->orderByDesc('id');
+        $query = UksVisit::with(['student' => function ($q) {
+            $q->withCount('visits');
+        }])->orderByDesc('visit_date')->orderByDesc('id');
 
         if ($filter === 'today') {
             $query->whereDate('visit_date', $today);

@@ -1,26 +1,35 @@
 @extends('layouts.app', ['heading' => 'Data Siswa'])
 
 @section('content')
-<div class="space-y-6">
-    <!-- Top Action Bar -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+<!-- Hero Section Admin Full Width: Menempel Langsung Tanpa Space di Atasnya -->
+<div class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-md">
+    <div class="px-4 sm:px-8 py-6 sm:py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h2 class="text-xl font-bold text-slate-800">Manajemen Data Siswa</h2>
-            <p class="text-xs text-slate-500 mt-1">Total {{ $totalStudents }} siswa terdaftar dalam sistem UKS sekolah.</p>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 dark:bg-emerald-800/80 text-white dark:text-emerald-200 border border-white/25 dark:border-emerald-600/40 mb-2 shadow-xs backdrop-blur-md">
+                <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+                Database Siswa Sekolah
+            </span>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white dark:text-emerald-50">Manajemen Data Siswa</h2>
+            <p class="mt-1.5 text-sm text-emerald-50 dark:text-emerald-200/90 leading-relaxed">
+                Total {{ $totalStudents }} siswa terdaftar dalam sistem UKS sekolah.
+            </p>
         </div>
     </div>
+</div>
+
+<div class="p-4 sm:p-8 space-y-6 flex-1">
 
     <!-- Filter & Search Bar -->
     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
         <form method="GET" action="{{ route('students.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <!-- Pencarian -->
             <div class="lg:col-span-2">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama siswa, NIS, atau kelas..." class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama siswa, NIS, atau kelas..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
             </div>
 
             <!-- Filter Jenis Kelamin -->
             <div>
-                <select name="gender" class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600">
+                <select name="gender" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
                     <option value="">-- Semua Gender --</option>
                     <option value="L" @selected(request('gender') === 'L')>Laki-laki</option>
                     <option value="P" @selected(request('gender') === 'P')>Perempuan</option>
@@ -29,7 +38,7 @@
 
             <!-- Filter Kelas & Submit -->
             <div class="flex gap-2">
-                <select name="class_name" class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-xs focus:border-teal-600 focus:bg-white focus:ring-teal-600">
+                <select name="class_name" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
                     <option value="">-- Semua Kelas --</option>
                     @foreach ($classes as $cl)
                         <option value="{{ $cl }}" @selected(request('class_name') === $cl)>Kelas {{ $cl }}</option>
@@ -53,7 +62,7 @@
             <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
                     <tr>
-
+                        <th class="px-6 py-4 w-12 text-center">No</th>
                         <th class="px-6 py-4">Nama Lengkap</th>
                         <th class="px-6 py-4">Kelas</th>
                         <th class="px-6 py-4">Jenis Kelamin</th>
@@ -62,9 +71,11 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
-                    @forelse ($students as $student)
+                    @forelse ($students as $index => $student)
                         <tr class="hover:bg-slate-50/60 transition">
-
+                            <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-500 text-xs">
+                                {{ method_exists($students, 'firstItem') && $students->firstItem() ? $students->firstItem() + $index : $loop->iteration }}
+                            </td>
                             <td class="px-6 py-4 font-bold text-slate-900 text-sm">
                                 {{ $student->name }}
                             </td>

@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/uks.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/uks.css') }}?v={{ file_exists(public_path('css/uks.css')) ? filemtime(public_path('css/uks.css')) : time() }}">
     <script>
         if (localStorage.getItem('uks_theme') === 'dark' || (!('uks_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -37,6 +37,34 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        /* High-Contrast Crisp Table Borders for Admin */
+        table {
+            border-collapse: collapse !important;
+            width: 100%;
+        }
+        html:not(.dark) table th {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            font-weight: 800 !important;
+            border-bottom: 2.5px solid #64748b !important;
+        }
+        html:not(.dark) table td {
+            border-bottom: 1.5px solid #94a3b8 !important;
+        }
+        html:not(.dark) table tbody tr:nth-child(even) td {
+            background-color: #f8fafc !important;
+        }
+        html:not(.dark) table tbody tr:hover td {
+            background-color: #e2e8f0 !important;
+        }
+        html.dark table th {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+            border-bottom: 2.5px solid #475569 !important;
+        }
+        html.dark table td {
+            border-bottom: 1.5px solid #334155 !important;
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 font-sans antialiased text-slate-800 dark:text-slate-100">
@@ -59,7 +87,7 @@
                 <!-- Menu Navigasi Sidebar -->
                 <nav class="p-4 space-y-1">
                     <!-- Menu Beranda / Dashboard -->
-                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 rounded-xl transition {{ request()->routeIs('dashboard') ? 'bg-teal-700 text-white font-medium shadow-md' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 rounded-xl transition {{ request()->routeIs('dashboard') ? 'bg-emerald-600 dark:bg-emerald-800 text-white font-medium shadow-md' : 'hover:bg-slate-800 text-slate-300' }}">
                         <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
@@ -67,7 +95,7 @@
                     </a>
 
                     <!-- Menu Ringkasan -->
-                    <a href="{{ route('admin.ringkasan') }}" class="flex items-center px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.ringkasan') ? 'bg-teal-700 text-white font-medium shadow-md' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <a href="{{ route('admin.ringkasan') }}" class="flex items-center px-4 py-3 rounded-xl transition {{ request()->routeIs('admin.ringkasan') ? 'bg-emerald-600 dark:bg-emerald-800 text-white font-medium shadow-md' : 'hover:bg-slate-800 text-slate-300' }}">
                         <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
@@ -75,7 +103,7 @@
                     </a>
 
                     <!-- Menu Catat Kunjungan (Data Siswa yang Kunjung) -->
-                    <a href="{{ route('kunjungan.index') }}" class="flex items-center px-4 py-3 rounded-xl transition {{ request()->routeIs('kunjungan.*') ? 'bg-teal-700 text-white font-medium shadow-md' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <a href="{{ route('kunjungan.index') }}" class="flex items-center px-4 py-3 rounded-xl transition {{ request()->routeIs('kunjungan.*') ? 'bg-emerald-600 dark:bg-emerald-800 text-white font-medium shadow-md' : 'hover:bg-slate-800 text-slate-300' }}">
                         <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -83,7 +111,7 @@
                     </a>
 
                     <!-- Menu Data Siswa -->
-                    <a href="{{ route('students.index') }}" class="flex items-center px-4 py-3 rounded-xl transition {{ request()->routeIs('students.*') ? 'bg-teal-700 text-white font-medium shadow-md' : 'hover:bg-slate-800 text-slate-300' }}">
+                    <a href="{{ route('students.index') }}" class="flex items-center px-4 py-3 rounded-xl transition {{ request()->routeIs('students.*') ? 'bg-emerald-600 dark:bg-emerald-800 text-white font-medium shadow-md' : 'hover:bg-slate-800 text-slate-300' }}">
                         <svg class="w-5 h-5 mr-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
@@ -147,10 +175,10 @@
                         <span class="theme-toggle-text hidden sm:inline">Mode Terang</span>
                     </button>
 
-                    <a href="{{ route('home') }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm text-teal-700 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 font-semibold bg-teal-50 dark:bg-slate-800 hover:bg-teal-100 dark:hover:bg-slate-700 px-3 sm:px-4 py-2 rounded-xl border border-teal-200 dark:border-slate-700 transition">
+                    <a href="{{ route('home') }}" target="_blank" class="inline-flex items-center gap-1.5 text-sm text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-semibold bg-emerald-50 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-slate-700 px-3 sm:px-4 py-2 rounded-xl border border-emerald-200 dark:border-slate-700 transition">
                         <span class="hidden sm:inline">Lihat Website</span>
                         <span class="sm:hidden">Web</span>
-                        <svg class="w-4 h-4 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
                     </a>
@@ -158,9 +186,9 @@
             </header>
 
             <!-- Main Content Area -->
-            <main class="p-4 sm:p-8 flex-1 overflow-y-auto overflow-x-hidden w-full">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden w-full flex flex-col">
                 @if (session('success'))
-                    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl shadow-xs">
+                    <div class="mx-4 sm:mx-8 mt-4 p-4 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-xl shadow-xs text-xs font-semibold">
                         {{ session('success') }}
                     </div>
                 @endif

@@ -1,22 +1,74 @@
 @extends('layouts.public', ['title' => 'Riwayat Kunjungan UKS'])
 
 @section('content')
-<main class="uk-ringkasan-main">
-    {{-- Header Kunjungan Modern Senada dengan Layanan & Ringkasan --}}
-    <section class="rounded-3xl bg-gradient-to-r from-teal-800 via-teal-700 to-slate-900 p-8 sm:p-12 text-white shadow-lg relative overflow-hidden mb-8">
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div class="max-w-3xl space-y-4">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-teal-500/20 text-teal-200 border border-teal-400/30">
-                    Catatan Aktivitas Siswa
-                </span>
-                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Riwayat Kunjungan UKS</h1>
-                <p class="text-sm sm:text-base text-teal-100/90 leading-relaxed font-normal">
-                    Data riwayat kunjungan dan penanganan kesehatan siswa di sekolah
-                </p>
+<main class="space-y-12 pb-16">
+    <!-- Hero Section Full Width: Menempel langsung di bawah navbar seperti Beranda -->
+    <section class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-xl overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative z-10">
+                <!-- Sisi Kiri: Teks & Aksi -->
+                <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-emerald-800/80 border border-white/25 dark:border-emerald-600/40 text-white dark:text-emerald-200 text-xs font-bold shadow-sm backdrop-blur-md">
+                        <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+                        <span>Catatan Aktivitas Siswa</span>
+                    </div>
+
+                    <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-black text-white dark:text-emerald-50 tracking-tight leading-tight drop-shadow-sm">
+                        Riwayat Kunjungan UKS
+                    </h1>
+
+                    <p class="text-sm sm:text-base text-emerald-50 dark:text-emerald-200/90 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
+                        Daftar lengkap catatan pemeriksaan kesehatan, keluhan sakit, dan penanganan medis pertama bagi seluruh siswa di SMKN 1 Ciomas.
+                    </p>
+
+                    <!-- Tombol Aksi Tambah Kunjungan -->
+                    <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                        <a href="{{ route('public.kunjungan.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 px-5 py-3 text-xs sm:text-sm font-extrabold shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
+                            <span>+ Catat Kunjungan Baru</span>
+                        </a>
+                        <a href="{{ route('public.ringkasan') }}" class="inline-flex items-center gap-2 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-white px-5 py-3 text-xs sm:text-sm font-bold backdrop-blur-md transition-all duration-200">
+                            <span>Lihat Statistik Lengkap</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sisi Kanan: Showcase Card ala Beranda -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="rounded-3xl border border-white/20 bg-slate-900/60 backdrop-blur-xl p-6 md:p-8 shadow-2xl text-white">
+                        <div class="flex items-center justify-between pb-4 border-b border-white/15">
+                            <div class="flex items-center space-x-3">
+                                <img src="{{ asset('images/logo-pmr.png') }}" alt="Logo PMR SMKN 1 Ciomas" class="h-11 w-11 rounded-2xl object-contain bg-white/20 p-1 border border-white/30 shadow-inner">
+                                <div>
+                                    <h3 class="text-sm font-bold text-white tracking-wide">Pencatatan Terpadu</h3>
+                                    <p class="text-[11px] text-teal-200">SMKN 1 Ciomas</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Live Data
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 pt-4">
+                            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+                                <div class="text-xl font-black text-teal-300">{{ count($recentVisits) }} Pasien</div>
+                                <div class="text-[11px] text-slate-300 mt-0.5">Data Ditampilkan</div>
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
+                                <div class="text-xl font-black text-amber-300">100%</div>
+                                <div class="text-[11px] text-slate-300 mt-0.5">Tercatat Digital</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-teal-100/80">
+                            <span>Sistem Observasi Medis</span>
+                            <span class="font-semibold text-white">PMR WIRA SMKN 1 Ciomas</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        </div>
     </section>
 
+    <!-- Konten Kunjungan Dalam Container Rapi -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
     {{-- Active Filter Notification Bar --}}
     @if ($activeFilter || $activeStatus)
         <div class="uk-active-filter-bar">
@@ -47,9 +99,9 @@
     {{-- Visits Table --}}
     <section class="uk-recent-visits-section">
         <div class="uk-panel-card">
-            <div class="uk-panel-header uk-panel-header--between">
-                <div>
-                    <h3>
+            <div class="uk-panel-header uk-panel-header--between flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                <div class="min-w-0">
+                    <h3 class="text-lg sm:text-xl font-bold">
                         @if ($activeStatus)
                             Riwayat Kunjungan — Status: {{ ucfirst($activeStatus) }}
                         @elseif ($activeFilter === 'today')
@@ -60,10 +112,10 @@
                             Riwayat Kunjungan UKS
                         @endif
                     </h3>
-                    <p>Klik tombol detail pada baris untuk melihat keterangan lengkap penanganan.</p>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Klik tombol detail pada baris untuk melihat keterangan lengkap penanganan.</p>
                 </div>
-                <div>
-                    <span class="uk-badge-counter">{{ count($recentVisits) }} Data</span>
+                <div class="shrink-0 self-start sm:self-auto">
+                    <span class="uk-badge-counter whitespace-nowrap">{{ count($recentVisits) }} Data</span>
                 </div>
             </div>
 
@@ -72,11 +124,11 @@
                     <table class="uk-table-pro">
                         <thead>
                             <tr>
-                                <th>Tanggal</th>
+                                <th style="width: 48px; text-align: center;">No</th>
+                                <th>Tanggal & Jam</th>
                                 <th>Nama Siswa</th>
                                 <th>Kelas</th>
-                                <th>Keluhan / Gejala</th>
-                                <th>Penanganan Awal</th>
+                                <th style="text-align: center;">Jumlah Kunjungan</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
@@ -84,11 +136,16 @@
                         <tbody>
                             @foreach ($recentVisits as $visit)
                                 <tr>
-                                    <td class="uk-td-date">
-                                        <div class="uk-date-badge">
-                                            <strong>{{ $visit->visit_date ? $visit->visit_date->format('d/m') : '-' }}</strong>
-                                            <small>{{ $visit->visit_date ? $visit->visit_date->format('Y') : '' }}</small>
-                                        </div>
+                                    <td class="uk-td-number">
+                                        {{ $loop->iteration }}
+                                    </td>
+                                    <td class="uk-td-date whitespace-nowrap">
+                                        <span class="font-bold text-slate-800 dark:text-slate-100 block text-xs">
+                                            {{ $visit->visit_date ? $visit->visit_date->format('d/m/Y') : '-' }}
+                                        </span>
+                                        <span class="text-[11px] text-slate-400 dark:text-slate-400 block mt-0.5">
+                                            {{ $visit->created_at ? $visit->created_at->format('H:i') : '' }} WIB
+                                        </span>
                                     </td>
                                     <td class="uk-td-student">
                                         <strong>{{ $visit->student->name ?? 'Siswa' }}</strong>
@@ -97,27 +154,31 @@
                                     <td>
                                         <span class="uk-badge-class">{{ $visit->student->class_name ?? '-' }}</span>
                                     </td>
-                                    <td class="uk-td-complaint">
-                                        <p>{{ $visit->complaint }}</p>
+                                    <td class="uk-td-visit-count">
+                                        <span class="uk-badge-visit-count" title="Total riwayat siswa ini berkunjung ke UKS">
+                                            {{ $visit->student->visits_count ?? 1 }} kali
+                                        </span>
                                     </td>
-                                    <td class="uk-td-treatment">
-                                        <p>{{ $visit->initial_treatment ?: '—' }}</p>
-                                    </td>
-                                    <td>
+                                    <td class="whitespace-nowrap">
                                         @if ($visit->status === 'ditangani')
-                                            <span class="uk-status-pill uk-status-pill--ditangani"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="display:inline;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Ditangani</span>
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                Ditangani di UKS
+                                            </span>
                                         @elseif ($visit->status === 'dirujuk')
-                                            <span class="uk-status-pill uk-status-pill--dirujuk"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>Dirujuk</span>
-                                        @elseif ($visit->status === 'pulang')
-                                            <span class="uk-status-pill uk-status-pill--pulang"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>Pulang</span>
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                                Dirujuk ke Faskes
+                                            </span>
                                         @else
-                                            <span class="uk-status-pill">{{ ucfirst($visit->status) }}</span>
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+                                                Diizinkan Pulang
+                                            </span>
                                         @endif
                                     </td>
                                     <td>
                                         <button type="button" class="uk-btn-table-action"
                                             data-name="{{ $visit->student->name ?? 'Siswa' }}"
                                             data-class="{{ $visit->student->class_name ?? '-' }}"
+                                            data-visit-count="{{ $visit->student->visits_count ?? 1 }}"
                                             data-date="{{ $visit->visit_date ? $visit->visit_date->format('d F Y') : '-' }}"
                                             data-complaint="{{ $visit->complaint }}"
                                             data-treatment="{{ $visit->initial_treatment ?: 'Belum ada catatan' }}"
@@ -149,7 +210,7 @@
                             </a>
                         @endif
                         <a href="{{ route('public.kunjungan.create') }}" class="uk-btn-primary uk-btn-sm">
-                            <span>+ Catat Kunjungan Siswa</span>
+                            <span>Catat Kunjungan Siswa</span>
                         </a>
                     </div>
                 </div>
@@ -176,6 +237,7 @@
             </a>
         </div>
     </section>
+    </div>
 </main>
 
 {{-- Detail Modal --}}
@@ -206,6 +268,16 @@
                 <label style="display: block; font-size: 11.5px; font-weight: 750; color: #536c76; text-transform: uppercase; margin-bottom: 4px;">Status Penanganan</label>
                 <div id="modalStatusBadge"></div>
             </div>
+
+            <div class="uk-modal-info-block" style="margin-top: 14px;">
+                <label style="display: block; font-size: 11.5px; font-weight: 750; color: #536c76; text-transform: uppercase; margin-bottom: 4px;">Jumlah Kunjungan Siswa</label>
+                <div id="modalVisitCountDisplay" style="background: #f7faf9; border: 1px solid #e1ede8; padding: 12px; border-radius: 8px; font-size: 13.5px; color: #1c333b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <span class="uk-badge-visit-count" style="font-size: 13px; padding: 5px 12px;">
+                        <strong id="modalVisitCountBadgeText">1 kali</strong>
+                    </span>
+                    <span id="modalVisitCountDesc" style="font-size: 12.5px; color: #64748b;">Siswa ini sudah 1 kali berkunjung ke UKS</span>
+                </div>
+            </div>
         </div>
         <div class="uk-modal-footer">
             <button type="button" class="uk-btn-secondary uk-btn-sm" onclick="closeVisitModal()">Tutup</button>
@@ -218,6 +290,7 @@
         showVisitModal(
             button.getAttribute('data-name') || 'Siswa',
             button.getAttribute('data-class') || '-',
+            button.getAttribute('data-visit-count') || '1',
             button.getAttribute('data-date') || '-',
             button.getAttribute('data-complaint') || '',
             button.getAttribute('data-treatment') || 'Belum ada catatan',
@@ -225,21 +298,26 @@
         );
     }
 
-    function showVisitModal(name, className, date, complaint, treatment, status) {
+    function showVisitModal(name, className, visitCount, date, complaint, treatment, status) {
         document.getElementById('modalStudentName').textContent = name;
         document.getElementById('modalStudentMeta').textContent = 'Kelas ' + className + ' • Tanggal ' + date;
         document.getElementById('modalComplaint').textContent = complaint;
         document.getElementById('modalTreatment').textContent = treatment;
         
+        var badgeText = document.getElementById('modalVisitCountBadgeText');
+        var descText = document.getElementById('modalVisitCountDesc');
+        if (badgeText) badgeText.textContent = visitCount + ' kali';
+        if (descText) descText.textContent = 'Siswa ini sudah ' + visitCount + ' kali tercatat berkunjung ke UKS';
+        
         var statusBadge = document.getElementById('modalStatusBadge');
         if (status === 'ditangani') {
-            statusBadge.innerHTML = '<span class="uk-status-pill uk-status-pill--ditangani"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="display:inline;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>Ditangani di UKS</span>';
+            statusBadge.innerHTML = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Ditangani di UKS</span>';
         } else if (status === 'dirujuk') {
-            statusBadge.innerHTML = '<span class="uk-status-pill uk-status-pill--dirujuk"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>Dirujuk ke Faskes</span>';
+            statusBadge.innerHTML = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">Dirujuk ke Faskes</span>';
         } else if (status === 'pulang') {
-            statusBadge.innerHTML = '<span class="uk-status-pill uk-status-pill--pulang"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>Diizinkan Pulang</span>';
+            statusBadge.innerHTML = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">Diizinkan Pulang</span>';
         } else {
-            statusBadge.innerHTML = '<span class="uk-status-pill">' + status + '</span>';
+            statusBadge.innerHTML = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700">' + status + '</span>';
         }
 
         document.getElementById('visitDetailModal').style.display = 'flex';
@@ -249,4 +327,76 @@
         document.getElementById('visitDetailModal').style.display = 'none';
     }
 </script>
+
+<style>
+    /* Sharp High-Contrast Table Styling */
+    .uk-table-pro {
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        width: 100% !important;
+        border: 2px solid #94a3b8 !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+    }
+    .uk-table-pro th {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+        font-weight: 800 !important;
+        font-size: 11.5px !important;
+        border-bottom: 2.5px solid #64748b !important;
+        padding: 14px 16px !important;
+    }
+    .uk-table-pro td {
+        border-bottom: 1.5px solid #94a3b8 !important;
+        padding: 14px 16px !important;
+    }
+    .uk-table-pro tr:last-child td {
+        border-bottom: none !important;
+    }
+    .uk-table-pro tbody tr:nth-child(even) td {
+        background-color: #f8fafc !important;
+    }
+    .uk-table-pro tbody tr:hover td {
+        background-color: #e2e8f0 !important;
+    }
+    html.dark .uk-table-pro {
+        border-color: #334155 !important;
+    }
+    html.dark .uk-table-pro th {
+        background-color: #0f172a !important;
+        color: #e2e8f0 !important;
+        border-bottom-color: #475569 !important;
+    }
+    html.dark .uk-table-pro td {
+        border-bottom-color: #334155 !important;
+    }
+    html.dark .uk-table-pro tbody tr:nth-child(even) td {
+        background-color: rgba(15, 23, 42, 0.4);
+    }
+    html.dark .uk-table-pro tbody tr:hover td {
+        background-color: rgba(30, 41, 59, 0.6) !important;
+    }
+
+    .uk-badge-counter {
+        white-space: nowrap !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    @media (max-width: 640px) {
+        .uk-panel-card {
+            padding: 20px 16px !important;
+        }
+        .uk-panel-header--between {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+        }
+        .uk-badge-counter {
+            align-self: flex-start !important;
+        }
+    }
+</style>
 @endsection

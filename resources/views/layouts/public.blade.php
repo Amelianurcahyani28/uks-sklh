@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/uks.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/uks.css') }}?v={{ file_exists(public_path('css/uks.css')) ? filemtime(public_path('css/uks.css')) : time() }}">
     <script>
         if (localStorage.getItem('uks_theme') === 'dark' || (!('uks_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -34,9 +34,43 @@
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
+        /* High-Contrast Crisp Table Borders for Light & Dark Mode */
+        table {
+            border-collapse: collapse !important;
+            width: 100%;
+        }
+        html:not(.dark) table th {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            font-weight: 800 !important;
+            border-bottom: 2.5px solid #64748b !important;
+        }
+        html:not(.dark) table td {
+            border-bottom: 1.5px solid #94a3b8 !important;
+        }
+        html:not(.dark) table tbody tr:nth-child(even) td {
+            background-color: #f8fafc !important;
+        }
+        html:not(.dark) table tbody tr:hover td {
+            background-color: #e2e8f0 !important;
+        }
+        html.dark table th {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+            border-bottom: 2.5px solid #475569 !important;
+        }
+        html.dark table td {
+            border-bottom: 1.5px solid #334155 !important;
+        }
+        html.dark table tbody tr:nth-child(even) td {
+            background-color: rgba(15, 23, 42, 0.4) !important;
+        }
+        html.dark table tbody tr:hover td {
+            background-color: rgba(30, 41, 59, 0.7) !important;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-teal-500 selection:text-white overflow-x-hidden max-w-full w-full">
+<body class="bg-slate-100/70 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col antialiased selection:bg-teal-500 selection:text-white overflow-x-hidden max-w-full w-full">
 
     <!-- Navbar Publik Modern (Mendukung Mode Terang & Gelap Senada dengan Admin) -->
     <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200 shadow-xs">
@@ -47,29 +81,29 @@
                     <img src="{{ asset('images/logo-smkn1ciomas.svg') }}" alt="Logo SMKN 1 Ciomas" class="h-24 w-auto object-contain group-hover:scale-105 transition-transform duration-200">
                     <div class="hidden sm:block">
                         <span class="font-extrabold text-lg tracking-wider text-slate-900 dark:text-white block leading-tight">UKS SMKN 1 CIOMAS</span>
-                        <span class="text-[11px] font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-widest block">Unit Kesehatan Sekolah</span>
+                        <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">Unit Kesehatan Sekolah</span>
                     </div>
                     <div class="sm:hidden">
                         <span class="font-extrabold text-base tracking-wider text-slate-900 dark:text-white block leading-tight">UKS</span>
-                        <span class="text-[10px] font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-widest block">SMKN 1 CIOMAS</span>
+                        <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest block">SMKN 1 CIOMAS</span>
                     </div>
                 </a>
 
                 <!-- Navigasi Menu -->
                 <nav class="hidden md:flex items-center gap-1 bg-slate-100/90 dark:bg-slate-800/60 p-1.5 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 backdrop-blur-xs">
-                    <a href="{{ route('home') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('home') ? 'bg-teal-600 dark:bg-teal-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
+                    <a href="{{ route('home') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('home') ? 'bg-emerald-600 dark:bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
                         Beranda
                     </a>
-                    <a href="{{ route('public.layanan') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.layanan') ? 'bg-teal-600 dark:bg-teal-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
+                    <a href="{{ route('public.layanan') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.layanan') ? 'bg-emerald-600 dark:bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
                         Layanan UKS
                     </a>
-                    <a href="{{ route('public.ringkasan') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.ringkasan') ? 'bg-teal-600 dark:bg-teal-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
+                    <a href="{{ route('public.ringkasan') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.ringkasan') ? 'bg-emerald-600 dark:bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
                         Ringkasan
                     </a>
-                    <a href="{{ route('public.kunjungan') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.kunjungan') ? 'bg-teal-600 dark:bg-teal-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
+                    <a href="{{ route('public.kunjungan') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.kunjungan') ? 'bg-emerald-600 dark:bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
                         Kunjungan Siswa
                     </a>
-                    <a href="{{ route('public.kunjungan.create') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.kunjungan.create') ? 'bg-teal-600 dark:bg-teal-700 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
+                    <a href="{{ route('public.kunjungan.create') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.kunjungan.create') ? 'bg-emerald-600 dark:bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
                         Isi Kunjungan
                     </a>
                     <a href="{{ route('public.hubungi') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.hubungi') ? 'bg-rose-600 dark:bg-rose-700 text-white shadow-xs' : 'text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:text-rose-400 dark:hover:text-white dark:hover:bg-rose-900/50' }}">
@@ -90,10 +124,9 @@
                     </button>
 
                     @auth
-                        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 px-3 py-2 sm:px-4 sm:py-2.5 text-xs font-bold text-white shadow-md hover:bg-teal-500 transition">
+                        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 dark:bg-emerald-700 px-3 py-2 sm:px-4 sm:py-2.5 text-xs font-bold text-white shadow-md hover:bg-emerald-500 dark:hover:bg-emerald-600 transition">
                             <span class="hidden sm:inline">Dashboard Admin</span>
                             <span class="sm:hidden">Admin</span>
-                            <span>→</span>
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="inline-flex items-center rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 px-3 py-2 sm:px-4 sm:py-2 text-xs font-bold text-slate-700 hover:text-slate-900 dark:text-slate-200 dark:hover:text-white transition shadow-xs">
@@ -146,9 +179,7 @@
                 <!-- Kolom 1: Brand -->
                 <div class="md:col-span-2 space-y-4">
                     <div class="flex items-center space-x-3">
-                        <div class="h-9 w-9 rounded-lg bg-amber-400 flex items-center justify-center text-slate-950 font-black text-lg">
-                            +
-                        </div>
+                        <img src="{{ asset('images/logo-pmr.png') }}" alt="Logo PMR SMKN 1 Ciomas" class="h-10 w-10 object-contain rounded-full bg-white p-0.5 shadow-sm">
                         <span class="font-extrabold text-base tracking-wider text-white">UKS SEKOLAH</span>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
