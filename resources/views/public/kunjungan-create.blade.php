@@ -33,7 +33,7 @@
                         <input type="text" id="student_name" name="student_name" value="{{ old('student_name') }}" placeholder="Ketik nama lengkap siswa..." required list="student-name-list">
                         <datalist id="student-name-list">
                             @foreach ($students ?? [] as $student)
-                                <option value="{{ $student->name }}">Kelas {{ $student->class_name }}</option>
+                                <option value="{{ $student->name }}">Kelas {{ $student->class_name }}{{ $student->major ? ' (' . $student->major . ')' : '' }}</option>
                             @endforeach
                         </datalist>
                     </div>
@@ -41,7 +41,22 @@
                     {{-- Kelas Siswa (Manual Input) --}}
                     <div class="uk-field-group">
                         <label for="class_name">Kelas <span class="uk-required">*</span></label>
-                        <input type="text" id="class_name" name="class_name" value="{{ old('class_name') }}" placeholder="Contoh: VII A, VIII B, IX C..." required>
+                        <input type="text" id="class_name" name="class_name" value="{{ old('class_name') }}" placeholder="Contoh: VII A, VIII B, X PPLG 1..." required>
+                    </div>
+
+                    {{-- Jurusan Siswa --}}
+                    <div class="uk-field-group">
+                        <label for="major">Jurusan  <span class="uk-required">*</span></label>
+                        <input type="text" id="major" name="major" value="{{ old('major') }}" placeholder="Contoh: PPLG, TJKT, DKV, Animasi, TO..." list="major-list">
+                        <datalist id="major-list">
+                            <option value="PPLG">Pengembangan Perangkat Lunak & Gim</option>
+                            <option value="TJKT">Teknik Jaringan Komputer & Telekomunikasi</option>
+                            <option value="DKV">Desain Komunikasi Visual</option>
+                            <option value="Animasi">Animasi</option>
+                            <option value="TO">Teknik Otomotif</option>
+                            <option value="AKL">Akuntansi & Keuangan Lembaga</option>
+                            <option value="MPLB">Manajemen Perkantoran & Layanan Bisnis</option>
+                        </datalist>
                     </div>
 
                     {{-- Jenis Kelamin --}}
@@ -102,6 +117,7 @@
         const studentsData = @json($students ?? []);
         const nameInput = document.getElementById('student_name');
         const classInput = document.getElementById('class_name');
+        const majorInput = document.getElementById('major');
         const genderInput = document.getElementById('gender');
 
         if (!studentsData || !studentsData.length) return;
@@ -109,6 +125,7 @@
         function fillFromStudent(student, skipName = false) {
             if (!skipName && student.name) nameInput.value = student.name;
             if (student.class_name && student.class_name !== '-') classInput.value = student.class_name;
+            if (student.major && majorInput) majorInput.value = student.major;
             if (student.gender && genderInput) genderInput.value = student.gender;
         }
 

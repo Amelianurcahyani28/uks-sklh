@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'nis', 'class_name', 'gender'])]
+#[Fillable(['name', 'nis', 'class_name', 'major', 'gender'])]
 class Student extends Model
 {
     public function visits(): HasMany

@@ -2452,10 +2452,22 @@ html.dark .uk-modal-info-block label {
 
 html.dark #modalComplaint,
 html.dark #modalTreatment,
-html.dark #modalVisitCountDisplay {
+html.dark #modalVisitCountDisplay,
+html.dark #modalVisitTimeBlock,
+html.dark #modalStudentClass {
     background-color: #162032 !important;
     border-color: #273549 !important;
     color: #e2e8f0 !important;
+}
+
+html.dark #modalDateDetail {
+    color: #f1f5f9 !important;
+}
+
+html.dark #modalTimeDetail {
+    background-color: rgba(14, 165, 233, 0.2) !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    color: #38bdf8 !important;
 }
 
 html.dark #modalVisitCountDesc {

@@ -20,6 +20,10 @@ class KunjunganController extends Controller
 
         $totalVisits = UksVisit::count();
         $todayVisits = UksVisit::whereDate('visit_date', $today)->count();
+        $todayStudentsCount = UksVisit::whereDate('visit_date', $today)
+            ->whereNotNull('student_id')
+            ->distinct('student_id')
+            ->count('student_id');
         $monthVisits = UksVisit::whereBetween('visit_date', [$monthStart, $today])->count();
         $studentCount = Student::count();
 
@@ -32,80 +36,56 @@ class KunjunganController extends Controller
             ->limit(5)
             ->get();
 
+        // Hitung status kunjungan KHUSUS HARI INI untuk dashboard
         $statusCounts = [
-            'ditangani' => UksVisit::where('status', 'ditangani')->count(),
-            'dirujuk' => UksVisit::where('status', 'dirujuk')->count(),
-            'pulang' => UksVisit::where('status', 'pulang')->count(),
+            'ditangani' => UksVisit::whereDate('visit_date', $today)->where('status', 'ditangani')->count(),
+            'dirujuk' => UksVisit::whereDate('visit_date', $today)->where('status', 'dirujuk')->count(),
+            'pulang' => UksVisit::whereDate('visit_date', $today)->where('status', 'pulang')->count(),
         ];
 
-        $filter = $request->query('filter', 'today');
         $status = $request->query('status');
         $keyword = trim((string) $request->query('q', ''));
 
-        // Jika filter status dipilih dan tidak ada data pada hari ini dengan status tersebut,
-        // alihkan cakupan tanggal ke 'all' agar seluruh data dengan status yang dipilih tetap tampil
-        if ($status && in_array($status, ['ditangani', 'dirujuk', 'pulang']) && $filter === 'today') {
-            $todayWithStatus = UksVisit::whereDate('visit_date', $today)->where('status', $status)->count();
-            if ($todayWithStatus === 0) {
-                $filter = 'all';
-            }
+        // Tabel di Dashboard khusus menampilkan kunjungan siswa HARI INI saja
+        $visitQuery = UksVisit::with([
+            'student' => function ($q) {
+                $q->withCount('visits');
+            },
+            'handler',
+        ])->whereDate('visit_date', $today)
+            ->latest('visit_date')
+            ->latest('id');
+
+        if ($status && in_array($status, ['ditangani', 'dirujuk', 'pulang'])) {
+            $visitQuery->where('status', $status);
         }
 
-        $studentsData = null;
-        $visitsData = null;
-
-        if ($filter === 'students') {
-            $studentQuery = Student::withCount('visits')->latest('id');
-            if ($keyword !== '') {
-                $studentQuery->where(function ($q) use ($keyword) {
-                    $q->where('name', 'like', "%{$keyword}%")
-                        ->orWhere('class_name', 'like', "%{$keyword}%");
-                });
-            }
-            $studentsData = $studentQuery->paginate(8)->withQueryString();
-        } else {
-            $visitQuery = UksVisit::with([
-                'student' => function ($q) {
-                    $q->withCount('visits');
-                },
-                'handler',
-            ])->latest('visit_date')->latest('id');
-
-            if ($filter === 'today') {
-                $visitQuery->whereDate('visit_date', $today);
-            } elseif ($filter === 'month') {
-                $visitQuery->whereBetween('visit_date', [$monthStart, $today]);
-            }
-
-            if ($status && in_array($status, ['ditangani', 'dirujuk', 'pulang'])) {
-                $visitQuery->where('status', $status);
-            }
-
-            if ($keyword !== '') {
-                $visitQuery->where(function ($q) use ($keyword) {
-                    $q->where('complaint', 'like', "%{$keyword}%")
-                        ->orWhere('initial_treatment', 'like', "%{$keyword}%")
-                        ->orWhereHas('student', function ($s) use ($keyword) {
-                            $s->where('name', 'like', "%{$keyword}%")
-                                ->orWhere('class_name', 'like', "%{$keyword}%");
-                        });
-                });
-            }
-
-            $visitsData = $visitQuery->paginate(8)->withQueryString();
+        if ($keyword !== '') {
+            $visitQuery->where(function ($q) use ($keyword) {
+                $q->where('complaint', 'like', "%{$keyword}%")
+                    ->orWhere('initial_treatment', 'like', "%{$keyword}%")
+                    ->orWhereHas('student', function ($s) use ($keyword) {
+                        $s->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('class_name', 'like', "%{$keyword}%")
+                            ->orWhere('major', 'like', "%{$keyword}%");
+                    });
+            });
         }
+
+        $visitsData = $visitQuery->paginate(10)->withQueryString();
 
         return view('dashboard', [
             'todayVisits' => $todayVisits,
+            'todayStudentsCount' => $todayStudentsCount,
             'monthVisits' => $monthVisits,
             'totalVisits' => $totalVisits,
             'studentCount' => $studentCount,
             'statusCounts' => $statusCounts,
             'complaints' => $complaints,
-            'activeFilter' => $filter,
+            'activeFilter' => 'today',
             'activeStatus' => $status,
             'visitsData' => $visitsData,
-            'studentsData' => $studentsData,
+            'studentsData' => null,
         ]);
     }
 
@@ -139,16 +119,26 @@ class KunjunganController extends Controller
                 $studentQuery->where(function ($q) use ($keyword) {
                     $q->where('name', 'like', "%{$keyword}%")
                         ->orWhere('nis', 'like', "%{$keyword}%")
-                        ->orWhere('class_name', 'like', "%{$keyword}%");
+                        ->orWhere('class_name', 'like', "%{$keyword}%")
+                        ->orWhere('major', 'like', "%{$keyword}%");
                 });
             }
             $studentsData = $studentQuery->paginate(10)->withQueryString();
         } else {
             $visitQuery = UksVisit::with(['student', 'handler'])->latest('visit_date')->latest('id');
 
-            if ($filter === 'today') {
+            // Filter rentang waktu / tanggal / periode
+            if ($request->filled('date')) {
+                $visitQuery->whereDate('visit_date', $request->query('date'));
+            } elseif ($request->filled('month')) {
+                $parts = explode('-', (string) $request->query('month'));
+                if (count($parts) === 2) {
+                    $visitQuery->whereYear('visit_date', $parts[0])
+                        ->whereMonth('visit_date', $parts[1]);
+                }
+            } elseif ($filter === 'today' || $request->query('period') === 'today') {
                 $visitQuery->whereDate('visit_date', $today);
-            } elseif ($filter === 'month' && ! $status) {
+            } elseif ($filter === 'month' || $request->query('period') === 'month') {
                 $visitQuery->whereBetween('visit_date', [$monthStart, $today]);
             }
 
@@ -162,7 +152,9 @@ class KunjunganController extends Controller
                         ->orWhere('initial_treatment', 'like', "%{$keyword}%")
                         ->orWhereHas('student', function ($s) use ($keyword) {
                             $s->where('name', 'like', "%{$keyword}%")
-                                ->orWhere('class_name', 'like', "%{$keyword}%");
+                                ->orWhere('nis', 'like', "%{$keyword}%")
+                                ->orWhere('class_name', 'like', "%{$keyword}%")
+                                ->orWhere('major', 'like', "%{$keyword}%");
                         });
                 });
             }
@@ -188,57 +180,42 @@ class KunjunganController extends Controller
     }
 
     /**
-     * Halaman Riwayat Kunjungan Admin
+     * Halaman Catat Kunjungan & Database Siswa Admin
      */
     public function index(Request $request): View
     {
-        $query = UksVisit::with([
-            'student' => function ($q) {
-                $q->withCount('visits');
-            },
-            'handler',
-        ])->latest('visit_date')->latest('id');
+        $query = Student::withCount('visits')->latest('id');
 
-        // Filter status
-        if ($request->filled('status')) {
-            $query->where('status', $request->query('status'));
-        }
-
-        // Filter rentang waktu / tanggal
-        if ($request->filled('date')) {
-            $query->whereDate('visit_date', $request->query('date'));
-        } elseif ($request->filled('month')) {
-            $parts = explode('-', $request->query('month'));
-            if (count($parts) === 2) {
-                $query->whereYear('visit_date', $parts[0])
-                    ->whereMonth('visit_date', $parts[1]);
-            }
-        } elseif ($request->query('period') === 'today') {
-            $query->whereDate('visit_date', now()->toDateString());
-        } elseif ($request->query('period') === 'month') {
-            $query->whereBetween('visit_date', [now()->startOfMonth()->toDateString(), now()->toDateString()]);
-        }
-
-        // Pencarian nama, nis, keluhan
+        // Pencarian nama, kelas, jurusan
         if ($request->filled('q')) {
             $keyword = trim((string) $request->query('q'));
             $query->where(function ($sub) use ($keyword) {
-                $sub->where('complaint', 'like', "%{$keyword}%")
-                    ->orWhere('initial_treatment', 'like', "%{$keyword}%")
-                    ->orWhereHas('student', function ($s) use ($keyword) {
-                        $s->where('name', 'like', "%{$keyword}%")
-                            ->orWhere('class_name', 'like', "%{$keyword}%");
-                    });
+                $sub->where('name', 'like', "%{$keyword}%")
+                    ->orWhere('nis', 'like', "%{$keyword}%")
+                    ->orWhere('class_name', 'like', "%{$keyword}%")
+                    ->orWhere('major', 'like', "%{$keyword}%");
             });
         }
 
-        $visits = $query->paginate(10)->withQueryString();
+        // Filter Jenis Kelamin
+        if ($request->filled('gender') && in_array($request->query('gender'), ['L', 'P'])) {
+            $query->where('gender', $request->query('gender'));
+        }
+
+        // Filter Kelas
+        if ($request->filled('class_name')) {
+            $query->where('class_name', $request->query('class_name'));
+        }
+
+        $students = $query->paginate(10)->withQueryString();
+        $allStudents = Student::orderBy('name')->get();
 
         return view('kunjungan.index', [
-            'visits' => $visits,
-            'totalVisits' => UksVisit::count(),
-            'todayCount' => UksVisit::whereDate('visit_date', now()->toDateString())->count(),
-            'students' => Student::orderBy('name')->get(),
+            'students' => $students,
+            'allStudents' => $allStudents,
+            'totalStudents' => Student::count(),
+            'classes' => Student::select('class_name')->distinct()->orderBy('class_name')->pluck('class_name'),
+            'majors' => Student::whereNotNull('major')->select('major')->distinct()->orderBy('major')->pluck('major'),
         ]);
     }
 
@@ -260,6 +237,7 @@ class KunjunganController extends Controller
             'student_name' => ['required_without:student_id', 'nullable', 'string', 'max:255'],
             'nis' => ['nullable', 'string', 'max:50'],
             'class_name' => ['nullable', 'string', 'max:50'],
+            'major' => ['nullable', 'string', 'max:100'],
             'gender' => ['nullable', 'in:L,P'],
             'visit_date' => ['required', 'date'],
             'complaint' => ['required', 'string', 'max:1000'],
@@ -280,6 +258,7 @@ class KunjunganController extends Controller
                     'name' => $inputName !== '' ? $inputName : 'Siswa UKS',
                     'nis' => $request->filled('nis') ? trim((string) $request->input('nis')) : 'UKS-'.strtoupper(substr(uniqid(), -4)),
                     'class_name' => $request->input('class_name', '-') ?: '-',
+                    'major' => $request->input('major') ?: null,
                     'gender' => $request->input('gender', 'L') ?: 'L',
                 ]);
             } else {
@@ -289,6 +268,9 @@ class KunjunganController extends Controller
                 }
                 if ($request->filled('class_name') && $student->class_name !== $request->input('class_name')) {
                     $updates['class_name'] = $request->input('class_name');
+                }
+                if ($request->filled('major') && $student->major !== $request->input('major')) {
+                    $updates['major'] = $request->input('major');
                 }
                 if ($request->filled('gender') && $student->gender !== $request->input('gender')) {
                     $updates['gender'] = $request->input('gender');
@@ -315,7 +297,7 @@ class KunjunganController extends Controller
             return redirect()->route('public.ringkasan')->with('success', 'Catatan kunjungan berhasil disimpan dan langsung masuk ke Ringkasan UKS.');
         }
 
-        return redirect()->route('kunjungan.index')->with('success', 'Data kunjungan berhasil dicatat ke sistem.');
+        return redirect()->route('students.index')->with('success', 'Data kunjungan berhasil dicatat ke sistem.');
     }
 
     /**

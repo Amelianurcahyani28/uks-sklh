@@ -37,6 +37,11 @@
         </div>
 
         <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Jurusan (Opsional)</label>
+            <input type="text" name="major" value="{{ old('major') }}" placeholder="Contoh: PPLG, TJKT, DKV, Animasi, TO..." class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm focus:border-teal-600 focus:bg-white focus:ring-teal-600 transition">
+        </div>
+
+        <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Jenis Kelamin *</label>
             <div class="grid grid-cols-2 gap-3">
                 <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/60">

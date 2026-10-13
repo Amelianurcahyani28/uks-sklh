@@ -37,6 +37,7 @@
                 @foreach ($students as $student)
                     <option value="{{ $student->id }}"
                         data-kelas="{{ $student->class_name }}"
+                        data-major="{{ $student->major ?? '-' }}"
                         @selected(old('student_id', $visit->student_id) == $student->id)>
                         {{ $student->name }}
                     </option>
@@ -44,11 +45,19 @@
             </select>
         </div>
 
-        {{-- NIS & Kelas (readonly) --}}
+        {{-- Kelas (readonly) --}}
         <div>
             <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Kelas</label>
             <input type="text" id="kelas_display" readonly
                 value="{{ old('student_id') ? '' : ($visit->student->class_name ?? '-') }}"
+                class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 dark:text-slate-400 text-sm text-slate-500 cursor-not-allowed py-2.5 px-3">
+        </div>
+
+        {{-- Jurusan (readonly) --}}
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Jurusan</label>
+            <input type="text" id="major_display" readonly
+                value="{{ old('student_id') ? '' : ($visit->student->major ?? '-') }}"
                 class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 dark:text-slate-400 text-sm text-slate-500 cursor-not-allowed py-2.5 px-3">
         </div>
 
@@ -124,8 +133,10 @@
 <script>
 document.getElementById('student_select').addEventListener('change', function () {
     const selected = this.options[this.selectedIndex];
-    document.getElementById('nis_display').value = selected.dataset.nis || '-';
-    document.getElementById('kelas_display').value = selected.dataset.kelas || '-';
+    const kelasInput = document.getElementById('kelas_display');
+    const majorInput = document.getElementById('major_display');
+    if (kelasInput) kelasInput.value = selected.dataset.kelas || '-';
+    if (majorInput) majorInput.value = selected.dataset.major || '-';
 });
 </script>
 @endsection

@@ -38,6 +38,11 @@
         </div>
 
         <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Jurusan (Opsional)</label>
+            <input type="text" name="major" value="{{ old('major', $student->major) }}" placeholder="Contoh: PPLG, TJKT, DKV, Animasi, TO..." class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 dark:text-slate-100 text-sm focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition px-3 py-2.5">
+        </div>
+
+        <div>
             <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Jenis Kelamin <span class="text-rose-500">*</span></label>
             <div class="grid grid-cols-2 gap-3">
                 <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/60 transition has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50/60 dark:has-[:checked]:bg-blue-950/40">

@@ -146,6 +146,30 @@ class ExampleTest extends TestCase
         ]);
     }
 
+    public function test_guest_can_submit_visit_with_major(): void
+    {
+        $response = $this->post('/isi-kunjungan', [
+            'student_name' => 'Ahmad Fikri',
+            'class_name' => 'X PPLG 1',
+            'major' => 'PPLG',
+            'gender' => 'L',
+            'visit_date' => now()->toDateString(),
+            'complaint' => 'Flu dan batuk',
+            'initial_treatment' => 'Istirahat di UKS',
+            'status' => 'ditangani',
+        ]);
+
+        $response->assertRedirectToRoute('public.ringkasan');
+        $this->assertDatabaseHas('students', [
+            'name' => 'Ahmad Fikri',
+            'class_name' => 'X PPLG 1',
+            'major' => 'PPLG',
+        ]);
+        $this->assertDatabaseHas('uks_visits', [
+            'complaint' => 'Flu dan batuk',
+        ]);
+    }
+
     public function test_user_can_login_and_view_dashboard(): void
     {
         $user = User::factory()->create();

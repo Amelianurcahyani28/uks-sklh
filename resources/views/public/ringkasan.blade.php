@@ -5,66 +5,31 @@
     <!-- Hero Section Full Width: Menempel langsung di bawah navbar seperti Beranda -->
     <section class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-xl overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative z-10">
-                <!-- Sisi Kiri: Teks & Filter Cepat -->
-                <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-emerald-800/80 border border-white/25 dark:border-emerald-600/40 text-white dark:text-emerald-200 text-xs font-bold shadow-sm backdrop-blur-md">
-                        <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
-                        <span>Transparansi & Rekapitulasi Data</span>
-                    </div>
-
-                    <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-black text-white dark:text-emerald-50 tracking-tight leading-tight drop-shadow-sm">
-                        Ringkasan & Statistik Data UKS
-                    </h1>
-
-                    <p class="text-sm sm:text-base text-emerald-50 dark:text-emerald-200/90 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                        Data terkini mengenai aktivitas pelayanan kesehatan siswa di sekolah. Klik salah satu metrik atau pilih tab di bawah untuk menyaring riwayat terkait.
-                    </p>
-
-                    <!-- Quick Navigation / Filters Tabs -->
-                    <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2.5 text-xs font-semibold">
-                        <a href="{{ route('public.ringkasan', ['filter' => 'today']) }}" class="px-4 py-2.5 rounded-xl {{ $activeFilter === 'today' ? 'bg-amber-400 text-slate-950 font-extrabold shadow-md' : 'bg-white/15 hover:bg-white/25 text-white border border-white/25' }} transition backdrop-blur-md shadow-sm">
-                            Hari Ini ({{ $todayVisits }})
-                        </a>
-                        <a href="{{ route('public.ringkasan', ['filter' => 'all']) }}" class="px-4 py-2.5 rounded-xl {{ $activeFilter === 'all' ? 'bg-amber-400 text-slate-950 font-extrabold shadow-md' : 'bg-white/15 hover:bg-white/25 text-white border border-white/25' }} transition backdrop-blur-md shadow-sm">
-                            Total Riwayat ({{ $totalVisits }})
-                        </a>
-                        <a href="{{ route('public.ringkasan', ['filter' => 'students']) }}" class="px-4 py-2.5 rounded-xl {{ $activeFilter === 'students' ? 'bg-amber-400 text-slate-950 font-extrabold shadow-md' : 'bg-white/15 hover:bg-white/25 text-white border border-white/25' }} transition backdrop-blur-md shadow-sm">
-                            Siswa Terdaftar ({{ $studentCount }})
-                        </a>
-                    </div>
+            <div class="max-w-3xl space-y-5 text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-emerald-800/80 border border-white/25 dark:border-emerald-600/40 text-white dark:text-emerald-200 text-xs font-bold shadow-sm backdrop-blur-md">
+                    <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+                    <span>Transparansi & Rekapitulasi Data</span>
                 </div>
 
-                <!-- Sisi Kanan: Showcase Card ala Beranda -->
-                <div class="lg:col-span-5 space-y-4">
-                    <div class="rounded-3xl border border-white/20 bg-slate-900/60 backdrop-blur-xl p-6 md:p-8 shadow-2xl text-white">
-                        <div class="flex items-center justify-between pb-4 border-b border-white/15">
-                            <div class="flex items-center space-x-3">
-                                <img src="{{ asset('images/logo-pmr.png') }}" alt="Logo PMR SMKN 1 Ciomas" class="h-11 w-11 rounded-2xl object-contain bg-white/20 p-1 border border-white/30 shadow-inner">
-                                <div>
-                                    <h3 class="text-sm font-bold text-white tracking-wide">Statistik Real-Time</h3>
-                                    <p class="text-[11px] text-teal-200">SMKN 1 Ciomas</p>
-                                </div>
-                            </div>
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold">
-                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Terverifikasi
-                            </span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 pt-4">
-                            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
-                                <div class="text-xl font-black text-amber-300">{{ $todayVisits }} Pasien</div>
-                                <div class="text-[11px] text-slate-300 mt-0.5">Kunjungan Hari Ini</div>
-                            </div>
-                            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
-                                <div class="text-xl font-black text-teal-300">{{ $totalVisits }} Data</div>
-                                <div class="text-[11px] text-slate-300 mt-0.5">Total Riwayat</div>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-teal-100/80">
-                            <span>Siswa Aktif Terdaftar</span>
-                            <span class="font-semibold text-white">{{ $studentCount }} Siswa</span>
-                        </div>
-                    </div>
+                <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-black text-white dark:text-emerald-50 tracking-tight leading-tight drop-shadow-sm">
+                    Ringkasan & Statistik Data UKS
+                </h1>
+
+                <p class="text-sm sm:text-base text-emerald-50 dark:text-emerald-200/90 leading-relaxed font-normal">
+                    Data terkini mengenai aktivitas pelayanan kesehatan siswa di sekolah. Klik salah satu metrik atau pilih tab di bawah untuk menyaring riwayat terkait.
+                </p>
+
+                <!-- Quick Navigation / Filters Tabs -->
+                <div class="pt-2 flex flex-wrap items-center gap-2.5 text-xs font-semibold">
+                    <a href="{{ route('public.ringkasan', ['filter' => 'today']) }}" class="px-4 py-2.5 rounded-xl {{ $activeFilter === 'today' ? 'bg-amber-400 text-slate-950 font-extrabold shadow-md' : 'bg-white/15 hover:bg-white/25 text-white border border-white/25' }} transition backdrop-blur-md shadow-sm">
+                        Hari Ini ({{ $todayVisits }})
+                    </a>
+                    <a href="{{ route('public.ringkasan', ['filter' => 'all']) }}" class="px-4 py-2.5 rounded-xl {{ $activeFilter === 'all' ? 'bg-amber-400 text-slate-950 font-extrabold shadow-md' : 'bg-white/15 hover:bg-white/25 text-white border border-white/25' }} transition backdrop-blur-md shadow-sm">
+                        Total Riwayat ({{ $totalVisits }})
+                    </a>
+                    <a href="{{ route('public.ringkasan', ['filter' => 'students']) }}" class="px-4 py-2.5 rounded-xl {{ $activeFilter === 'students' ? 'bg-amber-400 text-slate-950 font-extrabold shadow-md' : 'bg-white/15 hover:bg-white/25 text-white border border-white/25' }} transition backdrop-blur-md shadow-sm">
+                        Siswa Terdaftar ({{ $studentCount }})
+                    </a>
                 </div>
             </div>
         </div>
@@ -230,6 +195,7 @@
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">NIS</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Nama Lengkap Siswa</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Kelas</th>
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Jurusan</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Jenis Kelamin</th>
                             <th class="px-5 py-4 text-center border-b-2 border-slate-300 dark:border-slate-700">Riwayat Kunjungan</th>
                         </tr>
@@ -252,6 +218,11 @@
                                     </span>
                                 </td>
                                 <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+                                    <span class="bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-md text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800">
+                                        {{ $student->major ?: '-' }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
                                     @if ($student->gender === 'L')
                                         <span class="text-blue-700 dark:text-blue-400 font-semibold">Laki-laki</span>
                                     @else
@@ -266,7 +237,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-5 py-12 text-center text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                                <td colspan="7" class="px-5 py-12 text-center text-slate-400 border-b border-slate-200 dark:border-slate-800">
                                     Tidak ada data siswa ditemukan.
                                 </td>
                             </tr>
@@ -290,8 +261,7 @@
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Tanggal & Jam</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Siswa Pasien</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Kelas</th>
-                            <th class="px-5 py-4 text-center border-b-2 border-slate-300 dark:border-slate-700">Total Kunjungan</th>
-
+                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Jurusan</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Keluhan Sakit</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Tindakan Awal</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Status</th>
@@ -319,9 +289,9 @@
                                 <td class="px-5 py-4 whitespace-nowrap text-slate-700 dark:text-slate-300 font-medium text-sm border-b border-slate-200 dark:border-slate-800">
                                     {{ $visit->student->class_name ?? '-' }}
                                 </td>
-                                <td class="px-5 py-4 whitespace-nowrap text-center border-b border-slate-200 dark:border-slate-800">
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800" title="Total kunjungan siswa ke UKS">
-                                        {{ $visit->student->visits_count ?? 1 }} kali
+                                <td class="px-5 py-4 whitespace-nowrap text-slate-700 dark:text-slate-300 font-medium text-sm border-b border-slate-200 dark:border-slate-800">
+                                    <span class="bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded text-xs text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800">
+                                        {{ $visit->student->major ?: '-' }}
                                     </span>
                                 </td>
                                 <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800" style="max-width: 200px;">

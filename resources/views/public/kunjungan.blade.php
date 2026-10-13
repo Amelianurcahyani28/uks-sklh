@@ -5,91 +5,42 @@
     <!-- Hero Section Full Width: Menempel langsung di bawah navbar seperti Beranda -->
     <section class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-xl overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative z-10">
-                <!-- Sisi Kiri: Teks & Aksi -->
-                <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-emerald-800/80 border border-white/25 dark:border-emerald-600/40 text-white dark:text-emerald-200 text-xs font-bold shadow-sm backdrop-blur-md">
-                        <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
-                        <span>Catatan Aktivitas Siswa</span>
-                    </div>
-
-                    <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-black text-white dark:text-emerald-50 tracking-tight leading-tight drop-shadow-sm">
-                        Riwayat Kunjungan UKS
-                    </h1>
-
-                    <p class="text-sm sm:text-base text-emerald-50 dark:text-emerald-200/90 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                        Daftar lengkap catatan pemeriksaan kesehatan, keluhan sakit, dan penanganan medis pertama bagi seluruh siswa di SMKN 1 Ciomas.
-                    </p>
-
-                    <!-- Tombol Aksi Tambah Kunjungan -->
-                    <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                        <a href="{{ route('public.kunjungan.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 px-5 py-3 text-xs sm:text-sm font-extrabold shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
-                            <span>+ Catat Kunjungan Baru</span>
-                        </a>
-                        <a href="{{ route('public.ringkasan') }}" class="inline-flex items-center gap-2 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-white px-5 py-3 text-xs sm:text-sm font-bold backdrop-blur-md transition-all duration-200">
-                            <span>Lihat Statistik Lengkap</span>
-                        </a>
-                    </div>
+            <div class="max-w-3xl space-y-5 text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-emerald-800/80 border border-white/25 dark:border-emerald-600/40 text-white dark:text-emerald-200 text-xs font-bold shadow-sm backdrop-blur-md">
+                    <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
+                    <span>Catatan Aktivitas Siswa</span>
                 </div>
 
-                <!-- Sisi Kanan: Showcase Card ala Beranda -->
-                <div class="lg:col-span-5 space-y-4">
-                    <div class="rounded-3xl border border-white/20 bg-slate-900/60 backdrop-blur-xl p-6 md:p-8 shadow-2xl text-white">
-                        <div class="flex items-center justify-between pb-4 border-b border-white/15">
-                            <div class="flex items-center space-x-3">
-                                <img src="{{ asset('images/logo-pmr.png') }}" alt="Logo PMR SMKN 1 Ciomas" class="h-11 w-11 rounded-2xl object-contain bg-white/20 p-1 border border-white/30 shadow-inner">
-                                <div>
-                                    <h3 class="text-sm font-bold text-white tracking-wide">Pencatatan Terpadu</h3>
-                                    <p class="text-[11px] text-teal-200">SMKN 1 Ciomas</p>
-                                </div>
-                            </div>
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-semibold">
-                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Live Data
-                            </span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 pt-4">
-                            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
-                                <div class="text-xl font-black text-teal-300">{{ count($recentVisits) }} Pasien</div>
-                                <div class="text-[11px] text-slate-300 mt-0.5">Data Ditampilkan</div>
-                            </div>
-                            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center">
-                                <div class="text-xl font-black text-amber-300">100%</div>
-                                <div class="text-[11px] text-slate-300 mt-0.5">Tercatat Digital</div>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-teal-100/80">
-                            <span>Sistem Observasi Medis</span>
-                            <span class="font-semibold text-white">PMR WIRA SMKN 1 Ciomas</span>
-                        </div>
-                    </div>
-                </div>
+                <h1 class="text-3xl sm:text-4xl lg:text-[42px] font-black text-white dark:text-emerald-50 tracking-tight leading-tight drop-shadow-sm">
+                    Riwayat Kunjungan UKS
+                </h1>
+
+                <p class="text-sm sm:text-base text-emerald-50 dark:text-emerald-200/90 leading-relaxed font-normal">
+                    Daftar lengkap catatan pemeriksaan kesehatan, keluhan sakit, dan penanganan medis pertama bagi seluruh siswa di SMKN 1 Ciomas.
+                </p>
             </div>
         </div>
     </section>
 
     <!-- Konten Kunjungan Dalam Container Rapi -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-    {{-- Active Filter Notification Bar --}}
-    @if ($activeFilter || $activeStatus)
+    {{-- Active Filter & Search Notification Bar --}}
+    @if ($activeStatus || request()->filled('q'))
         <div class="uk-active-filter-bar">
             <div class="uk-active-filter-text">
                 <span class="uk-filter-indicator"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="display:inline;"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></span>
                 <span>
-                    Menampilkan filter: 
-                    <strong>
-                        @if ($activeFilter === 'today') Kunjungan Hari Ini
-                        @elseif ($activeFilter === 'month') Kunjungan Bulan Ini
-                        @elseif ($activeFilter === 'all') Seluruh Riwayat Kunjungan
-                        @endif
-
-                        @if ($activeStatus)
-                            Status "{{ ucfirst($activeStatus) }}"
-                        @endif
-                    </strong>
+                    @if ($activeStatus && request()->filled('q'))
+                        Menampilkan hasil pencarian <strong>"{{ request('q') }}"</strong> dengan status <strong>"{{ ucfirst($activeStatus) }}"</strong>
+                    @elseif (request()->filled('q'))
+                        Menampilkan hasil pencarian: <strong>"{{ request('q') }}"</strong>
+                    @else
+                        Menampilkan filter: <strong>Status "{{ ucfirst($activeStatus) }}"</strong>
+                    @endif
                 </span>
             </div>
             <a href="{{ route('public.kunjungan') }}" class="uk-btn-reset-filter">
-                <span>✕ Reset Filter (Tampilkan Semua)</span>
+                <span>✕ Reset Filter</span>
             </a>
         </div>
     @endif
@@ -99,23 +50,38 @@
     {{-- Visits Table --}}
     <section class="uk-recent-visits-section">
         <div class="uk-panel-card">
-            <div class="uk-panel-header uk-panel-header--between flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+            <div class="uk-panel-header uk-panel-header--between flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div class="min-w-0">
                     <h3 class="text-lg sm:text-xl font-bold">
                         @if ($activeStatus)
-                            Riwayat Kunjungan — Status: {{ ucfirst($activeStatus) }}
-                        @elseif ($activeFilter === 'today')
-                            Riwayat Kunjungan Hari Ini
-                        @elseif ($activeFilter === 'month')
-                            Riwayat Kunjungan Bulan Ini
+                            Kunjungan Siswa Hari Ini — Status: {{ ucfirst($activeStatus) }}
                         @else
-                            Riwayat Kunjungan UKS
+                            Kunjungan Siswa Hari Ini
                         @endif
                     </h3>
-                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Klik tombol detail pada baris untuk melihat keterangan lengkap penanganan.</p>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Menampilkan data siswa yang berkunjung ke UKS hari ini. Klik tombol detail pada baris untuk melihat keterangan lengkap.</p>
                 </div>
-                <div class="shrink-0 self-start sm:self-auto">
-                    <span class="uk-badge-counter whitespace-nowrap">{{ count($recentVisits) }} Data</span>
+                
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3 shrink-0">
+                    <!-- Form Pencarian Cepat -->
+                    <form method="GET" action="{{ route('public.kunjungan') }}" class="flex items-center gap-2 w-full sm:w-auto">
+                        @if ($activeStatus)
+                            <input type="hidden" name="status" value="{{ $activeStatus }}">
+                        @endif
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, kelas..." class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 w-full sm:w-60 transition shadow-xs">
+                        <button type="submit" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition shrink-0 shadow-sm">
+                            Cari
+                        </button>
+                        @if (request()->filled('q'))
+                            <a href="{{ route('public.kunjungan', array_filter(['status' => $activeStatus])) }}" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs sm:text-sm font-semibold transition shrink-0" title="Reset pencarian">
+                                ✕
+                            </a>
+                        @endif
+                    </form>
+
+                    <div class="self-start sm:self-auto">
+                        <span class="uk-badge-counter whitespace-nowrap">{{ count($recentVisits) }} Data</span>
+                    </div>
                 </div>
             </div>
 
@@ -125,9 +91,9 @@
                         <thead>
                             <tr>
                                 <th style="width: 48px; text-align: center;">No</th>
-                                <th>Tanggal & Jam</th>
                                 <th>Nama Siswa</th>
                                 <th>Kelas</th>
+                                <th>Jurusan</th>
                                 <th style="text-align: center;">Jumlah Kunjungan</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
@@ -139,20 +105,15 @@
                                     <td class="uk-td-number">
                                         {{ $loop->iteration }}
                                     </td>
-                                    <td class="uk-td-date whitespace-nowrap">
-                                        <span class="font-bold text-slate-800 dark:text-slate-100 block text-xs">
-                                            {{ $visit->visit_date ? $visit->visit_date->format('d/m/Y') : '-' }}
-                                        </span>
-                                        <span class="text-[11px] text-slate-400 dark:text-slate-400 block mt-0.5">
-                                            {{ $visit->created_at ? $visit->created_at->format('H:i') : '' }} WIB
-                                        </span>
-                                    </td>
                                     <td class="uk-td-student">
                                         <strong>{{ $visit->student->name ?? 'Siswa' }}</strong>
 
                                     </td>
                                     <td>
                                         <span class="uk-badge-class">{{ $visit->student->class_name ?? '-' }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="uk-badge-class" style="background: #eef2ff; color: #4338ca; border-color: #c7d2fe;">{{ $visit->student->major ?: '-' }}</span>
                                     </td>
                                     <td class="uk-td-visit-count">
                                         <span class="uk-badge-visit-count" title="Total riwayat siswa ini berkunjung ke UKS">
@@ -178,8 +139,10 @@
                                         <button type="button" class="uk-btn-table-action"
                                             data-name="{{ $visit->student->name ?? 'Siswa' }}"
                                             data-class="{{ $visit->student->class_name ?? '-' }}"
+                                            data-major="{{ $visit->student->major ?? '-' }}"
                                             data-visit-count="{{ $visit->student->visits_count ?? 1 }}"
-                                            data-date="{{ $visit->visit_date ? $visit->visit_date->format('d F Y') : '-' }}"
+                                            data-date="{{ $visit->visit_date ? $visit->visit_date->translatedFormat('d F Y') : '-' }}"
+                                            data-time="{{ $visit->created_at ? $visit->created_at->format('H:i') . ' WIB' : ($visit->visit_date ? $visit->visit_date->format('H:i') . ' WIB' : '') }}"
                                             data-complaint="{{ $visit->complaint }}"
                                             data-treatment="{{ $visit->initial_treatment ?: 'Belum ada catatan' }}"
                                             data-status="{{ $visit->status }}"
@@ -195,18 +158,20 @@
             @else
                 <div class="uk-empty-state">
                     <div class="uk-empty-icon"><svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto; color: #cbd5e1;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg></div>
-                    <h4>Belum Ada Catatan Kunjungan</h4>
+                    <h4>Belum Ada Kunjungan Siswa Hari Ini</h4>
                     <p>
-                        @if ($activeStatus || $activeFilter)
-                            Tidak ada data yang sesuai dengan filter yang Anda pilih.
+                        @if (request()->filled('q'))
+                            Tidak ditemukan catatan kunjungan hari ini dengan kata kunci "{{ request('q') }}".
+                        @elseif ($activeStatus)
+                            Tidak ada catatan kunjungan hari ini dengan status "{{ ucfirst($activeStatus) }}".
                         @else
-                            Saat ini belum ada catatan riwayat kunjungan UKS di sistem.
+                            Belum ada siswa yang tercatat berkunjung ke UKS pada hari ini ({{ now()->translatedFormat('d F Y') }}).
                         @endif
                     </p>
                     <div style="display: flex; gap: 12px; justify-content: center;">
-                        @if ($activeStatus || $activeFilter)
+                        @if (request()->filled('q') || $activeStatus)
                             <a href="{{ route('public.kunjungan') }}" class="uk-btn-secondary uk-btn-sm">
-                                <span>Reset Filter</span>
+                                <span>Reset Filter & Pencarian</span>
                             </a>
                         @endif
                         <a href="{{ route('public.kunjungan.create') }}" class="uk-btn-primary uk-btn-sm">
@@ -251,10 +216,20 @@
             <button type="button" class="uk-modal-close" onclick="closeVisitModal()">✕</button>
         </div>
         <div class="uk-modal-body">
-            <h3 id="modalStudentName" style="margin: 0 0 4px; font-size: 22px; font-weight: 800; color: #082d33;"></h3>
-            <p id="modalStudentMeta" style="margin: 0 0 20px; color: #607680; font-size: 13.5px;"></p>
+            <h3 id="modalStudentName" style="margin: 0 0 16px; font-size: 22px; font-weight: 800; color: #082d33;"></h3>
 
-            <div class="uk-modal-info-block">
+            <div class="uk-modal-info-block" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                    <label style="display: block; font-size: 11.5px; font-weight: 750; color: #536c76; text-transform: uppercase; margin-bottom: 4px;">Kelas</label>
+                    <div id="modalStudentClass" style="background: #f7faf9; border: 1px solid #e1ede8; padding: 12px; border-radius: 8px; font-size: 13.5px; color: #1c333b;"></div>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 11.5px; font-weight: 750; color: #536c76; text-transform: uppercase; margin-bottom: 4px;">Jurusan</label>
+                    <div id="modalStudentMajor" style="background: #f7faf9; border: 1px solid #e1ede8; padding: 12px; border-radius: 8px; font-size: 13.5px; color: #1c333b;"></div>
+                </div>
+            </div>
+
+            <div class="uk-modal-info-block" style="margin-top: 14px;">
                 <label style="display: block; font-size: 11.5px; font-weight: 750; color: #536c76; text-transform: uppercase; margin-bottom: 4px;">Keluhan atau Gejala</label>
                 <div id="modalComplaint" style="background: #f7faf9; border: 1px solid #e1ede8; padding: 12px; border-radius: 8px; font-size: 13.5px; color: #1c333b; white-space: pre-wrap; word-break: break-word;"></div>
             </div>
@@ -267,6 +242,14 @@
             <div class="uk-modal-info-block" style="margin-top: 14px;">
                 <label style="display: block; font-size: 11.5px; font-weight: 750; color: #536c76; text-transform: uppercase; margin-bottom: 4px;">Status Penanganan</label>
                 <div id="modalStatusBadge"></div>
+            </div>
+
+            <div class="uk-modal-info-block" style="margin-top: 14px;">
+                <label style="display: block; font-size: 11.5px; font-weight: 750; color: #536c76; text-transform: uppercase; margin-bottom: 4px;">Waktu & Jam Pengisian Kunjungan</label>
+                <div id="modalVisitTimeBlock" style="background: #f7faf9; border: 1px solid #e1ede8; padding: 12px; border-radius: 8px; font-size: 13.5px; color: #1c333b; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <span id="modalDateDetail" style="font-weight: 700;">-</span>
+                    <span id="modalTimeDetail" style="font-weight: 750; color: #0284c7; background: #e0f2fe; padding: 4px 12px; border-radius: 8px; font-size: 13px; border: 1px solid #bae6fd;">-</span>
+                </div>
             </div>
 
             <div class="uk-modal-info-block" style="margin-top: 14px;">
@@ -290,19 +273,33 @@
         showVisitModal(
             button.getAttribute('data-name') || 'Siswa',
             button.getAttribute('data-class') || '-',
+            button.getAttribute('data-major') || '-',
             button.getAttribute('data-visit-count') || '1',
             button.getAttribute('data-date') || '-',
+            button.getAttribute('data-time') || '',
             button.getAttribute('data-complaint') || '',
             button.getAttribute('data-treatment') || 'Belum ada catatan',
             button.getAttribute('data-status') || ''
         );
     }
 
-    function showVisitModal(name, className, visitCount, date, complaint, treatment, status) {
+    function showVisitModal(name, className, major, visitCount, date, time, complaint, treatment, status) {
         document.getElementById('modalStudentName').textContent = name;
-        document.getElementById('modalStudentMeta').textContent = 'Kelas ' + className + ' • Tanggal ' + date;
+        var classElement = document.getElementById('modalStudentClass');
+        if (classElement) {
+            classElement.textContent = className || '-';
+        }
+        var majorElement = document.getElementById('modalStudentMajor');
+        if (majorElement) {
+            majorElement.textContent = major || '-';
+        }
         document.getElementById('modalComplaint').textContent = complaint;
         document.getElementById('modalTreatment').textContent = treatment;
+
+        var dateDetail = document.getElementById('modalDateDetail');
+        var timeDetail = document.getElementById('modalTimeDetail');
+        if (dateDetail) dateDetail.textContent = 'Tanggal: ' + date;
+        if (timeDetail) timeDetail.textContent = time ? 'Pukul ' + time : 'Waktu tercatat';
         
         var badgeText = document.getElementById('modalVisitCountBadgeText');
         var descText = document.getElementById('modalVisitCountDesc');

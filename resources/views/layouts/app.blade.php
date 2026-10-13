@@ -118,7 +118,6 @@
                         <span>Data siswa</span>
                     </a>
                 </nav>
-                </nav>
             </div>
 
             <!-- Bagian Profil & Logout di Bawah Sidebar -->

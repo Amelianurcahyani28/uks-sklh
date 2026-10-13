@@ -3,50 +3,51 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\UksVisit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class StudentController extends Controller
 {
     /**
-     * Halaman Daftar Siswa Admin
+     * Halaman Data Siswa yang Berkunjung
      */
     public function index(Request $request): View
     {
-        $query = Student::withCount('visits')->latest('id');
+        $query = UksVisit::with([
+            'student' => function ($q) {
+                $q->withCount('visits');
+            },
+            'handler',
+        ])->latest('visit_date')->latest('id');
 
-        // Pencarian nama, nis, kelas
+        // Filter status
+        if ($request->filled('status')) {
+            $query->where('status', $request->query('status'));
+        }
+
+        // Pencarian nama, keluhan, kelas, jurusan
         if ($request->filled('q')) {
             $keyword = trim((string) $request->query('q'));
             $query->where(function ($sub) use ($keyword) {
-                $sub->where('name', 'like', "%{$keyword}%")
-                    ->orWhere('class_name', 'like', "%{$keyword}%");
+                $sub->where('complaint', 'like', "%{$keyword}%")
+                    ->orWhere('initial_treatment', 'like', "%{$keyword}%")
+                    ->orWhereHas('student', function ($s) use ($keyword) {
+                        $s->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('nis', 'like', "%{$keyword}%")
+                            ->orWhere('class_name', 'like', "%{$keyword}%")
+                            ->orWhere('major', 'like', "%{$keyword}%");
+                    });
             });
         }
 
-        // Filter Jenis Kelamin
-        if ($request->filled('gender') && in_array($request->query('gender'), ['L', 'P'])) {
-            $query->where('gender', $request->query('gender'));
-        }
-
-        // Filter Kelas
-        if ($request->filled('class_name')) {
-            $query->where('class_name', $request->query('class_name'));
-        }
-
-        $students = $query->paginate(10)->withQueryString();
-
-        $availableClasses = Student::select('class_name')
-            ->distinct()
-            ->orderBy('class_name')
-            ->pluck('class_name');
+        $visits = $query->paginate(10)->withQueryString();
 
         return view('students.index', [
-            'students' => $students,
-            'totalStudents' => Student::count(),
-            'classes' => $availableClasses,
+            'visits' => $visits,
+            'totalVisits' => UksVisit::count(),
+            'todayCount' => UksVisit::whereDate('visit_date', now()->toDateString())->count(),
         ]);
     }
 
@@ -66,14 +67,15 @@ class StudentController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'class_name' => ['required', 'string', 'max:30'],
+            'major' => ['nullable', 'string', 'max:100'],
             'gender' => ['required', 'in:L,P'],
         ]);
 
-        $validated['nis'] = 'NIS-' . strtoupper(uniqid());
+        $validated['nis'] = 'NIS-'.strtoupper(uniqid());
 
         Student::create($validated);
 
-        return redirect()->route('students.index')->with('success', 'Data siswa baru berhasil ditambahkan.');
+        return redirect()->route('kunjungan.index')->with('success', 'Data siswa baru berhasil ditambahkan.');
     }
 
     /**
@@ -94,12 +96,13 @@ class StudentController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'class_name' => ['required', 'string', 'max:30'],
+            'major' => ['nullable', 'string', 'max:100'],
             'gender' => ['required', 'in:L,P'],
         ]);
 
         $student->update($validated);
 
-        return redirect()->route('students.index')->with('success', "Data siswa {$student->name} berhasil diperbarui.");
+        return redirect()->route('kunjungan.index')->with('success', "Data siswa {$student->name} berhasil diperbarui.");
     }
 
     /**
@@ -110,6 +113,6 @@ class StudentController extends Controller
         $name = $student->name;
         $student->delete();
 
-        return redirect()->route('students.index')->with('success', "Data siswa {$name} berhasil dihapus.");
+        return redirect()->route('kunjungan.index')->with('success', "Data siswa {$name} berhasil dihapus.");
     }
 }

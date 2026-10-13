@@ -61,7 +61,8 @@ class HomeController extends Controller
             if ($keyword !== '') {
                 $studentQuery->where(function ($q) use ($keyword) {
                     $q->where('name', 'like', "%{$keyword}%")
-                        ->orWhere('class_name', 'like', "%{$keyword}%");
+                        ->orWhere('class_name', 'like', "%{$keyword}%")
+                        ->orWhere('major', 'like', "%{$keyword}%");
                 });
             }
             $studentsData = $studentQuery->paginate(12)->withQueryString();
@@ -86,7 +87,8 @@ class HomeController extends Controller
                         ->orWhere('initial_treatment', 'like', "%{$keyword}%")
                         ->orWhereHas('student', function ($s) use ($keyword) {
                             $s->where('name', 'like', "%{$keyword}%")
-                                ->orWhere('class_name', 'like', "%{$keyword}%");
+                                ->orWhere('class_name', 'like', "%{$keyword}%")
+                                ->orWhere('major', 'like', "%{$keyword}%");
                         });
                 });
             }
@@ -120,31 +122,41 @@ class HomeController extends Controller
         $monthVisits = UksVisit::whereBetween('visit_date', [$monthStart, $today])->count();
         $totalVisits = UksVisit::count();
 
-        $filter = $request->query('filter');
         $status = $request->query('status');
+        $keyword = trim((string) $request->query('q', ''));
 
         $query = UksVisit::with(['student' => function ($q) {
             $q->withCount('visits');
-        }])->orderByDesc('visit_date')->orderByDesc('id');
-
-        if ($filter === 'today') {
-            $query->whereDate('visit_date', $today);
-        } elseif ($filter === 'month') {
-            $query->whereBetween('visit_date', [$monthStart, $today]);
-        }
+        }])->whereDate('visit_date', $today)
+            ->orderByDesc('visit_date')
+            ->orderByDesc('id');
 
         if ($status && in_array($status, ['ditangani', 'dirujuk', 'pulang'])) {
             $query->where('status', $status);
         }
 
-        $recentVisits = $query->limit(50)->get();
+        if ($keyword !== '') {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('complaint', 'like', "%{$keyword}%")
+                    ->orWhere('initial_treatment', 'like', "%{$keyword}%")
+                    ->orWhereHas('student', function ($s) use ($keyword) {
+                        $s->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('class_name', 'like', "%{$keyword}%")
+                            ->orWhere('major', 'like', "%{$keyword}%");
+                    });
+            });
+        }
+
+        $recentVisits = $query->get()->unique(function ($item) {
+            return $item->student_id ?? $item->id;
+        })->values();
 
         return view('public.kunjungan', [
             'todayVisits' => $todayVisits,
             'monthVisits' => $monthVisits,
             'totalVisits' => $totalVisits,
             'recentVisits' => $recentVisits,
-            'activeFilter' => $filter,
+            'activeFilter' => 'today',
             'activeStatus' => $status,
         ]);
     }
@@ -152,7 +164,7 @@ class HomeController extends Controller
     public function createVisit(): View
     {
         return view('public.kunjungan-create', [
-            'students' => Student::orderBy('name')->get(['id', 'nis', 'name', 'class_name', 'gender']),
+            'students' => Student::orderBy('name')->get(['id', 'nis', 'name', 'class_name', 'major', 'gender']),
         ]);
     }
 }

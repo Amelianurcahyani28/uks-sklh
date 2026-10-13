@@ -80,63 +80,111 @@
         </a>
     </section>
 
-    <!-- Filter Status Cepat (Jika sedang melihat data kunjungan) -->
+    <!-- Filter & Pencarian Box (Sesuai Komponen Kunjungan Siswa) -->
     @if ($activeFilter !== 'students')
-        <div class="flex flex-wrap items-center gap-2">
-            <span class="text-xs font-semibold text-slate-400 mr-2">Filter Status:</span>
-            <a href="{{ route('admin.ringkasan', ['filter' => $activeFilter]) }}" 
-               class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ empty($activeStatus) ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-xs' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' }}">
-                Semua Status
-            </a>
-            <a href="{{ route('admin.ringkasan', ['filter' => ($activeFilter === 'today' ? 'today' : 'all'), 'status' => 'ditangani']) }}" 
-               class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $activeStatus === 'ditangani' ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-xs' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800' }}">
-                Ditangani di UKS ({{ $statusStats['ditangani'] }})
-            </a>
-            <a href="{{ route('admin.ringkasan', ['filter' => ($activeFilter === 'today' ? 'today' : 'all'), 'status' => 'dirujuk']) }}" 
-               class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $activeStatus === 'dirujuk' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-amber-700 hover:bg-amber-50' }}">
-                Dirujuk ({{ $statusStats['dirujuk'] }})
-            </a>
-            <a href="{{ route('admin.ringkasan', ['filter' => ($activeFilter === 'today' ? 'today' : 'all'), 'status' => 'pulang']) }}" 
-               class="px-3 py-1.5 rounded-lg text-xs font-semibold transition {{ $activeStatus === 'pulang' ? 'bg-sky-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-sky-700 hover:bg-sky-50' }}">
-                Pulang ({{ $statusStats['pulang'] }})
-            </a>
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
+            <form method="GET" action="{{ route('admin.ringkasan') }}" class="space-y-3">
+                <input type="hidden" name="filter" value="{{ $activeFilter }}">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <!-- Pencarian Kata Kunci -->
+                    <div class="lg:col-span-2">
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama siswa, atau keluhan sakit..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
+                    </div>
+
+                    <!-- Filter Status -->
+                    <div>
+                        <select name="status" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
+                            <option value="">-- Semua Status --</option>
+                            <option value="ditangani" @selected(request('status') === 'ditangani' || $activeStatus === 'ditangani')>Ditangani di UKS</option>
+                            <option value="dirujuk" @selected(request('status') === 'dirujuk' || $activeStatus === 'dirujuk')>Dirujuk ke Faskes</option>
+                            <option value="pulang" @selected(request('status') === 'pulang' || $activeStatus === 'pulang')>Diperbolehkan Pulang</option>
+                        </select>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-2">
+                        <button type="submit" class="w-full shrink-0 px-4 py-2 bg-slate-800 hover:bg-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 text-white rounded-xl text-xs font-semibold transition">
+                            Cari
+                        </button>
+                        @if (request()->hasAny(['q', 'status', 'period', 'date', 'month']))
+                            <a href="{{ route('admin.ringkasan', ['filter' => $activeFilter]) }}" class="shrink-0 px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition flex items-center justify-center" title="Reset filter">
+                                ✕
+                            </a>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Filter Waktu Khusus -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <!-- Filter Hari Ini & Semua -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Cepat</label>
+                        <div class="flex gap-2">
+                            <a href="{{ route('admin.ringkasan', ['filter' => 'today', 'period' => 'today']) }}" class="flex-1 text-center rounded-xl border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:border-teal-800/60 dark:bg-teal-900/40 dark:text-teal-300 dark:hover:bg-teal-900/60 text-xs font-bold px-2 py-2 transition {{ request('period') === 'today' || $activeFilter === 'today' ? 'ring-2 ring-teal-500 dark:ring-teal-400' : '' }}">
+                                Hari Ini
+                            </a>
+                            <a href="{{ route('admin.ringkasan', ['filter' => 'all']) }}" class="flex-1 text-center rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800/60 dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60 text-xs font-bold px-2 py-2 transition {{ (!request()->hasAny(['period', 'date', 'month', 'q', 'status']) && $activeFilter === 'all') || ($activeFilter === 'all' && !request()->hasAny(['date', 'month', 'period'])) ? 'ring-2 ring-indigo-500 dark:ring-indigo-400' : '' }}">
+                                Semua
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Filter Per Hari -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Per Hari (Tanggal)</label>
+                        <input type="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600">
+                    </div>
+
+                    <!-- Filter Per Bulan -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Per Bulan</label>
+                        <input type="month" name="month" value="{{ request('month') }}" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600">
+                    </div>
+                </div>
+            </form>
         </div>
     @endif
 
     <!-- Data Table & CRUD Section -->
     <div class="space-y-4">
-        <!-- Bar Pencarian Cepat & Header Tabel -->
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <!-- Header Tabel & Aksi -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
             <div>
-                <h3 class="text-base font-bold text-slate-900">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">
                     @if ($activeFilter === 'students')
                         Manajemen Data Siswa Terdaftar
-                    @elseif ($activeFilter === 'today')
+                    @elseif (request()->filled('date'))
+                        Catatan Kunjungan Tanggal {{ \Carbon\Carbon::parse(request('date'))->format('d/m/Y') }}
+                    @elseif (request()->filled('month'))
+                        Catatan Kunjungan Bulan {{ \Carbon\Carbon::parse(request('month').'-01')->translatedFormat('F Y') }}
+                    @elseif ($activeFilter === 'today' || request('period') === 'today')
                         Catatan Kunjungan Hari Ini ({{ now()->format('d/m/Y') }})
-                    @elseif ($activeFilter === 'month')
-                        Catatan Kunjungan Bulan Ini ({{ now()->translatedFormat('F Y') }})
                     @else
                         Seluruh Catatan Riwayat Kunjungan
                     @endif
                 </h3>
-                <p class="text-xs text-slate-500 mt-0.5">Kelola data secara langsung dengan fitur Tambah, Edit, dan Hapus (CRUD).</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Kelola data secara langsung dengan fitur Tambah, Edit, dan Hapus (CRUD).</p>
             </div>
 
-            <form method="GET" action="{{ route('admin.ringkasan') }}" class="flex items-center gap-2">
-                <input type="hidden" name="filter" value="{{ $activeFilter }}">
-                @if ($activeStatus)
-                    <input type="hidden" name="status" value="{{ $activeStatus }}">
-                @endif
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $activeFilter === 'students' ? 'Cari nama, NIS, kelas...' : 'Cari siswa atau keluhan...' }}" class="w-56 sm:w-72 px-4 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
-                <button type="submit" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 dark:bg-teal-600 dark:hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition shrink-0">
-                    Cari
-                </button>
-                @if (request()->filled('q'))
-                    <a href="{{ route('admin.ringkasan', ['filter' => $activeFilter, 'status' => $activeStatus]) }}" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition shrink-0">
-                        ✕
-                    </a>
-                @endif
-            </form>
+            @if ($activeFilter === 'students')
+                <!-- Form Pencarian Khusus Siswa -->
+                <form method="GET" action="{{ route('admin.ringkasan') }}" class="flex items-center gap-2">
+                    <input type="hidden" name="filter" value="students">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, NIS, kelas..." class="w-56 sm:w-72 px-4 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
+                    <button type="submit" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition shrink-0 shadow-sm">
+                        Cari
+                    </button>
+                    @if (request()->filled('q'))
+                        <a href="{{ route('admin.ringkasan', ['filter' => 'students']) }}" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition shrink-0" title="Reset pencarian">
+                            ✕
+                        </a>
+                    @endif
+                </form>
+            @else
+                <a href="{{ route('kunjungan.create') }}" class="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition">
+                    Catat Kunjungan
+                </a>
+            @endif
         </div>
 
         <!-- Tabel Konten Interaktif dengan Tombol CRUD -->
@@ -150,6 +198,7 @@
 
                                 <th class="px-6 py-4">Nama Lengkap Siswa</th>
                                 <th class="px-6 py-4">Kelas</th>
+                                <th class="px-6 py-4">Jurusan</th>
                                 <th class="px-6 py-4">Jenis Kelamin</th>
                                 <th class="px-6 py-4 text-center">Riwayat Kunjungan</th>
                                 <th class="px-6 py-4 text-center">Aksi (CRUD)</th>
@@ -165,6 +214,11 @@
                                     <td class="px-6 py-4">
                                         <span class="bg-slate-100 px-2.5 py-1 rounded-md text-slate-700 font-semibold">
                                             Kelas {{ $student->class_name }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 px-2.5 py-1 rounded-md font-semibold">
+                                            {{ $student->major ?: '-' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
@@ -223,8 +277,7 @@
                                 <th class="px-6 py-4">{{ $activeFilter === 'today' ? 'Jam Masuk' : 'Tanggal & Jam' }}</th>
                                 <th class="px-6 py-4">Siswa Pasien</th>
                                 <th class="px-6 py-4">Kelas</th>
-                                <th class="px-6 py-4 text-center">Total Kunjungan</th>
-
+                                <th class="px-6 py-4">Jurusan</th>
                                 <th class="px-6 py-4">Keluhan Sakit</th>
                                 <th class="px-6 py-4">Tindakan Awal</th>
                                 <th class="px-6 py-4">Status</th>
@@ -265,13 +318,11 @@
                                         {{ $visit->student->class_name ?? '-' }}
                                     </td>
 
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-700 border border-teal-200" title="Total riwayat kunjungan siswa ke UKS">
-                                            {{ $visit->student->visits_count ?? 1 }} kali
+                                    <td class="px-6 py-4 whitespace-nowrap text-slate-600 font-medium">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                            {{ $visit->student->major ?: '-' }}
                                         </span>
                                     </td>
-
-
 
                                     <td class="px-6 py-4" style="max-width: 200px;">
                                         <p class="text-slate-800 dark:text-slate-200 font-medium text-xs leading-relaxed line-clamp-2" title="{{ $visit->complaint }}">
