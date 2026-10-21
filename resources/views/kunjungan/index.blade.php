@@ -40,14 +40,12 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
         <form method="GET" action="{{ route('kunjungan.index') }}" class="flex items-center gap-2">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama siswa, atau kelas..." class="w-56 sm:w-72 px-4 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
-            <button type="submit" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition shrink-0 shadow-sm">
-                Cari
+            <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/30 active:scale-95 transition shrink-0 cursor-pointer">
+                <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span>Cari</span>
             </button>
-            @if (request()->filled('q'))
-                <a href="{{ route('kunjungan.index') }}" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition shrink-0" title="Reset pencarian">
-                    ✕
-                </a>
-            @endif
         </form>
 
         <button type="button" onclick="openCatatModal()" class="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition cursor-pointer">
@@ -61,47 +59,52 @@
             <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">
                     <tr>
-                        <th class="px-6 py-4 w-12 text-center">No</th>
-                        <th class="px-6 py-4">Nama Lengkap</th>
-                        <th class="px-6 py-4">Kelas</th>
-                        <th class="px-6 py-4">Jurusan</th>
-                        <th class="px-6 py-4">Jenis Kelamin</th>
-                        <th class="px-6 py-4 text-center">Total Kunjungan UKS</th>
-                        <th class="px-6 py-4 text-center">Aksi</th>
+                        <th class="sticky left-0 z-20 bg-slate-50 dark:bg-slate-800 px-3 py-3.5 w-14 text-center whitespace-nowrap border-r border-slate-200 dark:border-slate-700 shadow-xs">No</th>
+                        <th class="px-5 py-3.5 whitespace-nowrap">Nama Lengkap</th>
+                        <th class="px-5 py-3.5 whitespace-nowrap">Kelas</th>
+                        <th class="px-5 py-3.5 whitespace-nowrap">Jurusan</th>
+                        <th class="px-5 py-3.5 whitespace-nowrap">Jenis Kelamin</th>
+                        <th class="px-5 py-3.5 text-center whitespace-nowrap">Total Kunjungan UKS</th>
+                        <th class="px-5 py-3.5 text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                     @forelse ($students as $index => $student)
-                        <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition">
-                            <td class="px-6 py-4 whitespace-nowrap text-center font-bold text-slate-500 dark:text-slate-400 text-xs">
-                                {{ method_exists($students, 'firstItem') && $students->firstItem() ? $students->firstItem() + $index : $loop->iteration }}
-                            </td>
-                            <td class="px-6 py-4 font-bold text-slate-900 dark:text-white text-sm">
-                                {{ $student->name }}
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg text-slate-700 dark:text-slate-300 font-semibold">
-                                    Kelas {{ $student->class_name }}
+                        @php
+                            $cleanClass = trim(preg_replace('/^kelas\s*/i', '', $student->class_name ?? ''));
+                        @endphp
+                        <tr class="group hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition">
+                            <td class="sticky left-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 px-3 py-3.5 whitespace-nowrap text-center border-r border-slate-100 dark:border-slate-800 shadow-xs">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs border border-slate-200 dark:border-slate-700">
+                                    {{ method_exists($students, 'firstItem') && $students->firstItem() ? $students->firstItem() + $index : $loop->iteration }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4">
-                                <span class="bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-lg text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800">
+                            <td class="px-5 py-3.5 whitespace-nowrap font-bold text-slate-900 dark:text-white text-sm">
+                                {{ $student->name }}
+                            </td>
+                            <td class="px-5 py-3.5 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 whitespace-nowrap shadow-xs">
+                                    {{ $cleanClass !== '' && $cleanClass !== '-' ? 'Kelas ' . $cleanClass : '-' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 whitespace-nowrap">
                                     {{ $student->major ?: '-' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 @if ($student->gender === 'L')
-                                    <span class="inline-flex items-center gap-1 text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-1 rounded-full font-medium">
+                                    <span class="inline-flex items-center gap-1 text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">
                                         Laki-laki
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-2.5 py-1 rounded-full font-medium">
+                                    <span class="inline-flex items-center gap-1 text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-2.5 py-1 rounded-full font-medium whitespace-nowrap">
                                         Perempuan
                                     </span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold {{ $student->visits_count > 0 ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-400' }}">
+                            <td class="px-6 py-4 text-center whitespace-nowrap">
+                                <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap {{ $student->visits_count > 0 ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-400' }}">
                                     {{ $student->visits_count }} kali
                                 </span>
                             </td>
@@ -199,8 +202,12 @@
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">NIS (Nomor Induk Siswa)</label>
-                            <input type="text" name="nis" id="modal_nis" value="{{ old('nis') }}" placeholder="Kosongkan jika auto NIS" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Jenis Kelamin</label>
+                            <select name="gender" id="modal_gender" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600">
+                                <option value="">-- Pilih Gender --</option>
+                                <option value="L" @selected(old('gender') === 'L')>Laki-laki</option>
+                                <option value="P" @selected(old('gender') === 'P')>Perempuan</option>
+                            </select>
                         </div>
                     </div>
 
@@ -212,17 +219,13 @@
 
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Jurusan</label>
-                            <input type="text" name="major" id="modal_major" value="{{ old('major') }}" placeholder="Contoh: PPLG, TJKT, DKV..." class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Jenis Kelamin</label>
-                            <select name="gender" id="modal_gender" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600">
-                                <option value="">-- Pilih Gender --</option>
-                                <option value="L" @selected(old('gender') === 'L')>Laki-laki</option>
-                                <option value="P" @selected(old('gender') === 'P')>Perempuan</option>
+                            <select name="major" id="modal_major" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600">
+                                <option value="">-- Pilih Jurusan --</option>
+                                <option value="PPLG" @selected(old('major') === 'PPLG')>PPLG</option>
+                                <option value="BCF" @selected(old('major') === 'BCF')>BCF</option>
+                                <option value="ANIM" @selected(old('major') === 'ANIM')>ANIM</option>
+                                <option value="TO" @selected(old('major') === 'TO')>TO</option>
+                                <option value="TPFL" @selected(old('major') === 'TPFL')>TPFL</option>
                             </select>
                         </div>
                     </div>

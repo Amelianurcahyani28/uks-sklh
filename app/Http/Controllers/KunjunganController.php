@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Petugas;
+use App\Models\PetugasJadwal;
 use App\Models\Student;
 use App\Models\UksVisit;
+use App\Services\VisitExportService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class KunjunganController extends Controller
 {
@@ -74,6 +79,15 @@ class KunjunganController extends Controller
 
         $visitsData = $visitQuery->paginate(10)->withQueryString();
 
+        $daysList = PetugasJadwal::daysList();
+        $todayDayNumber = now()->dayOfWeekIso;
+        $seninJumatSchedules = PetugasJadwal::with('petugas')
+            ->whereBetween('day_number', [1, 5])
+            ->where('status', 'aktif')
+            ->orderBy('day_number')
+            ->get()
+            ->groupBy('day_number');
+
         return view('dashboard', [
             'todayVisits' => $todayVisits,
             'todayStudentsCount' => $todayStudentsCount,
@@ -86,6 +100,10 @@ class KunjunganController extends Controller
             'activeStatus' => $status,
             'visitsData' => $visitsData,
             'studentsData' => null,
+            'petugasCount' => Petugas::count(),
+            'daysList' => $daysList,
+            'todayDayNumber' => $todayDayNumber,
+            'seninJumatSchedules' => $seninJumatSchedules,
         ]);
     }
 
@@ -337,5 +355,63 @@ class KunjunganController extends Controller
         $visit->delete();
 
         return redirect()->back()->with('success', 'Catatan kunjungan berhasil dihapus.');
+    }
+
+    /**
+     * Export Data Laporan Kunjungan ke Format Excel (.xlsx) Per Tanggal / Filter
+     */
+    public function exportExcel(Request $request, VisitExportService $exportService): BinaryFileResponse
+    {
+        $today = now()->toDateString();
+        $query = UksVisit::with(['student', 'handler'])
+            ->orderBy('visit_date', 'asc')
+            ->orderBy('id', 'asc');
+
+        $periodLabel = 'Keseluruhan Data Riwayat Kunjungan';
+        $filename = 'Laporan-Kunjungan-UKS-Semua-Tanggal.xlsx';
+
+        if ($request->filled('date')) {
+            $date = Carbon::parse($request->query('date'));
+            $query->whereDate('visit_date', $date->toDateString());
+            $periodLabel = 'Tanggal '.$date->translatedFormat('d F Y');
+            $filename = 'Laporan-Kunjungan-UKS-'.$date->format('Y-m-d').'.xlsx';
+        } elseif ($request->filled('month')) {
+            $parts = explode('-', (string) $request->query('month'));
+            if (count($parts) === 2) {
+                $query->whereYear('visit_date', $parts[0])
+                    ->whereMonth('visit_date', $parts[1]);
+                $monthDate = Carbon::createFromDate((int) $parts[0], (int) $parts[1], 1);
+                $periodLabel = 'Bulan '.$monthDate->translatedFormat('F Y');
+                $filename = 'Laporan-Kunjungan-UKS-Bulan-'.$parts[0].'-'.$parts[1].'.xlsx';
+            }
+        } elseif ($request->query('period') === 'today' || $request->query('filter') === 'today') {
+            $query->whereDate('visit_date', $today);
+            $periodLabel = 'Hari Ini ('.now()->translatedFormat('d F Y').')';
+            $filename = 'Laporan-Kunjungan-UKS-'.now()->format('Y-m-d').'.xlsx';
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->query('status'));
+        }
+
+        if ($request->filled('q')) {
+            $keyword = trim((string) $request->query('q'));
+            $query->where(function ($sub) use ($keyword) {
+                $sub->where('complaint', 'like', "%{$keyword}%")
+                    ->orWhere('initial_treatment', 'like', "%{$keyword}%")
+                    ->orWhereHas('student', function ($s) use ($keyword) {
+                        $s->where('name', 'like', "%{$keyword}%")
+                            ->orWhere('class_name', 'like', "%{$keyword}%")
+                            ->orWhere('major', 'like', "%{$keyword}%");
+                    });
+            });
+        }
+
+        $visits = $query->get();
+        $filePath = $exportService->exportVisits($visits, $periodLabel);
+
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
     }
 }

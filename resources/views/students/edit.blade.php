@@ -39,7 +39,21 @@
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Jurusan (Opsional)</label>
-            <input type="text" name="major" value="{{ old('major', $student->major) }}" placeholder="Contoh: PPLG, TJKT, DKV, Animasi, TO..." class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 dark:text-slate-100 text-sm focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition px-3 py-2.5">
+            @php
+                $currentMajor = old('major', $student->major);
+                $isCustomMajor = $currentMajor && !in_array($currentMajor, ['PPLG', 'BCF', 'ANIM', 'TO', 'TPFL']);
+            @endphp
+            <select name="major" class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 dark:text-slate-100 text-sm focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition px-3 py-2.5">
+                <option value="">-- Pilih Jurusan --</option>
+                <option value="PPLG" @selected($currentMajor === 'PPLG')>PPLG</option>
+                <option value="BCF" @selected($currentMajor === 'BCF')>BCF</option>
+                <option value="ANIM" @selected($currentMajor === 'ANIM')>ANIM</option>
+                <option value="TO" @selected($currentMajor === 'TO')>TO</option>
+                <option value="TPFL" @selected($currentMajor === 'TPFL')>TPFL</option>
+                @if($isCustomMajor)
+                    <option value="{{ $currentMajor }}" selected>{{ $currentMajor }}</option>
+                @endif
+            </select>
         </div>
 
         <div>

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Petugas;
+use App\Models\PetugasJadwal;
 use App\Models\Student;
 use App\Models\UksVisit;
 use Illuminate\Http\Request;
@@ -14,25 +16,89 @@ class HomeController extends Controller
         $today = now()->toDateString();
         $monthStart = now()->startOfMonth()->toDateString();
 
+        $todayDayNumber = now()->dayOfWeekIso;
+        $allDays = PetugasJadwal::allDaysList();
+        $isWeekday = $todayDayNumber >= 1 && $todayDayNumber <= 5;
+        $todayDayName = $allDays[$todayDayNumber] ?? 'Senin';
+
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+        $todayFormatted = $todayDayName.', '.now()->day.' '.($monthNames[now()->month] ?? '').' '.now()->year;
+
+        // Jadwal petugas piket KHUSUS HARI INI saja
+        $todaySchedules = PetugasJadwal::with('petugas')
+            ->where('day_number', $todayDayNumber)
+            ->where('status', 'aktif')
+            ->whereHas('petugas', function ($query) {
+                $query->where('status', 'aktif');
+            })
+            ->get();
+
+        // Jika hari ini akhir pekan (Sabtu/Minggu), ambil jadwal piket Senin berikutnya sebagai informasi siswa
+        $nextMondaySchedules = null;
+        if (! $isWeekday) {
+            $nextMondaySchedules = PetugasJadwal::with('petugas')
+                ->where('day_number', 1)
+                ->where('status', 'aktif')
+                ->whereHas('petugas', function ($query) {
+                    $query->where('status', 'aktif');
+                })
+                ->get();
+        }
+
         return view('home', [
             'todayVisits' => UksVisit::whereDate('visit_date', $today)->count(),
             'monthVisits' => UksVisit::whereBetween('visit_date', [$monthStart, $today])->count(),
             'totalVisits' => UksVisit::count(),
             'studentCount' => Student::count(),
-        ]);
-    }
-
-    public function layanan(): View
-    {
-        return view('public.layanan', [
-            'totalVisits' => UksVisit::count(),
-            'studentCount' => Student::count(),
+            'todayDayName' => $todayDayName,
+            'todayFormatted' => $todayFormatted,
+            'todaySchedules' => $todaySchedules,
+            'isWeekday' => $isWeekday,
+            'nextMondaySchedules' => $nextMondaySchedules,
         ]);
     }
 
     public function hubungi(): View
     {
         return view('public.hubungi');
+    }
+
+    public function petugas(Request $request): View
+    {
+        $query = Petugas::query();
+
+        if ($request->filled('q')) {
+            $keyword = trim((string) $request->query('q'));
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', "%{$keyword}%")
+                    ->orWhere('role_title', 'like', "%{$keyword}%")
+                    ->orWhere('schedule', 'like', "%{$keyword}%");
+            });
+        }
+
+        $petugasList = $query->orderByRaw("CASE WHEN status = 'aktif' THEN 1 ELSE 2 END")
+            ->latest('id')
+            ->get();
+
+        $weeklySchedules = PetugasJadwal::with('petugas')
+            ->where('status', 'aktif')
+            ->whereBetween('day_number', [1, 5])
+            ->orderBy('day_number')
+            ->get();
+
+        $todayDayNumber = now()->dayOfWeekIso;
+
+        return view('public.petugas', [
+            'petugasList' => $petugasList,
+            'totalPetugas' => Petugas::count(),
+            'aktifCount' => Petugas::where('status', 'aktif')->count(),
+            'weeklySchedules' => $weeklySchedules,
+            'todayDayNumber' => $todayDayNumber,
+        ]);
     }
 
     public function summary(Request $request): View

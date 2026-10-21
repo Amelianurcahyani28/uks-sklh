@@ -173,14 +173,12 @@
                     <input type="hidden" name="status" value="{{ $activeStatus }}">
                 @endif
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $activeFilter === 'students' ? 'Cari nama, kelas...' : 'Cari siswa atau keluhan...' }}" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 w-full sm:w-64 flex-1 transition shadow-xs">
-                <button type="submit" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 dark:bg-teal-600 dark:hover:bg-teal-700 text-white rounded-xl text-xs font-semibold transition shrink-0">
-                    Cari
+                <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/30 active:scale-95 transition shrink-0 cursor-pointer">
+                    <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span>Cari</span>
                 </button>
-                @if (request()->filled('q'))
-                    <a href="{{ route('public.ringkasan', ['filter' => $activeFilter, 'status' => $activeStatus]) }}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition shrink-0">
-                        ✕
-                    </a>
-                @endif
             </form>
         </div>
 
@@ -191,8 +189,7 @@
                 <table class="w-full text-left text-xs border-collapse">
                     <thead class="bg-slate-100 dark:bg-slate-800/80 border-b-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 uppercase tracking-wider font-bold">
                         <tr>
-                            <th class="px-5 py-4 w-12 text-center border-b-2 border-slate-300 dark:border-slate-700">No</th>
-                            <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">NIS</th>
+                            <th class="sticky left-0 z-20 bg-slate-100 dark:bg-slate-800 px-3 py-3.5 w-14 text-center whitespace-nowrap border-r border-b-2 border-slate-300 dark:border-slate-700 shadow-xs">No</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Nama Lengkap Siswa</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Kelas</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Jurusan</th>
@@ -202,42 +199,44 @@
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
                         @forelse ($studentsData as $index => $student)
-                            <tr class="border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
-                                <td class="px-5 py-4 whitespace-nowrap text-center font-bold text-slate-600 dark:text-slate-400 text-xs border-b border-slate-200 dark:border-slate-800">
-                                    {{ method_exists($studentsData, 'firstItem') && $studentsData->firstItem() ? $studentsData->firstItem() + $index : $loop->iteration }}
-                                </td>
-                                <td class="px-5 py-4 font-mono font-medium text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
-                                    {{ $student->nis }}
-                                </td>
-                                <td class="px-5 py-4 font-bold text-slate-900 dark:text-white text-sm border-b border-slate-200 dark:border-slate-800">
-                                    {{ $student->name }}
-                                </td>
-                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
-                                    <span class="bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md text-slate-700 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
-                                        Kelas {{ $student->class_name }}
+                            @php
+                                $cleanClass = trim(preg_replace('/^kelas\s*/i', '', $student->class_name ?? ''));
+                            @endphp
+                            <tr class="group border-b border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition">
+                                <td class="sticky left-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 px-3 py-3.5 whitespace-nowrap text-center border-r border-b border-slate-200 dark:border-slate-800 shadow-xs">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs border border-slate-200 dark:border-slate-700">
+                                        {{ method_exists($studentsData, 'firstItem') && $studentsData->firstItem() ? $studentsData->firstItem() + $index : $loop->iteration }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
-                                    <span class="bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-md text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800">
+                                <td class="px-5 py-4 whitespace-nowrap font-bold text-slate-900 dark:text-white text-sm border-b border-slate-200 dark:border-slate-800">
+                                    {{ $student->name }}
+                                </td>
+                                <td class="px-5 py-4 whitespace-nowrap border-b border-slate-200 dark:border-slate-800">
+                                    <span class="inline-flex items-center bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md text-slate-700 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700 whitespace-nowrap">
+                                        {{ $cleanClass !== '' && $cleanClass !== '-' ? 'Kelas ' . $cleanClass : '-' }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-4 whitespace-nowrap border-b border-slate-200 dark:border-slate-800">
+                                    <span class="inline-flex items-center bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-md text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800 whitespace-nowrap">
                                         {{ $student->major ?: '-' }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+                                <td class="px-5 py-4 whitespace-nowrap border-b border-slate-200 dark:border-slate-800">
                                     @if ($student->gender === 'L')
                                         <span class="text-blue-700 dark:text-blue-400 font-semibold">Laki-laki</span>
                                     @else
                                         <span class="text-rose-700 dark:text-rose-400 font-semibold">Perempuan</span>
                                     @endif
                                 </td>
-                                <td class="px-5 py-4 text-center border-b border-slate-200 dark:border-slate-800">
-                                    <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold {{ $student->visits_count > 0 ? 'bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700' }}">
+                                <td class="px-5 py-4 text-center whitespace-nowrap border-b border-slate-200 dark:border-slate-800">
+                                    <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap {{ $student->visits_count > 0 ? 'bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700' }}">
                                         {{ $student->visits_count }} kali kunjungan
                                     </span>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-5 py-12 text-center text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                                <td colspan="6" class="px-5 py-12 text-center text-slate-400 border-b border-slate-200 dark:border-slate-800">
                                     Tidak ada data siswa ditemukan.
                                 </td>
                             </tr>
@@ -257,7 +256,7 @@
                 <table class="w-full text-left text-xs border-collapse">
                     <thead class="bg-slate-100 dark:bg-slate-800 border-b-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 uppercase tracking-wider font-bold">
                         <tr>
-                            <th class="px-5 py-4 w-12 text-center border-b-2 border-slate-300 dark:border-slate-700">No</th>
+                            <th class="sticky left-0 z-20 bg-slate-100 dark:bg-slate-800 px-3 py-3.5 w-14 text-center whitespace-nowrap border-r border-b-2 border-slate-300 dark:border-slate-700 shadow-xs">No</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Tanggal & Jam</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Siswa Pasien</th>
                             <th class="px-5 py-4 border-b-2 border-slate-300 dark:border-slate-700">Kelas</th>
@@ -269,9 +268,11 @@
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
                         @forelse ($visitsData as $index => $visit)
-                            <tr class="border-b border-slate-200 dark:border-slate-800 hover:bg-teal-50/20 dark:hover:bg-slate-800/60 transition">
-                                <td class="px-5 py-4 whitespace-nowrap text-center font-bold text-slate-600 dark:text-slate-400 text-xs border-b border-slate-200 dark:border-slate-800">
-                                    {{ method_exists($visitsData, 'firstItem') && $visitsData->firstItem() ? $visitsData->firstItem() + $index : $loop->iteration }}
+                            <tr class="group border-b border-slate-200 dark:border-slate-800 hover:bg-teal-50/20 dark:hover:bg-slate-800/60 transition">
+                                <td class="sticky left-0 z-10 bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800 px-3 py-3.5 whitespace-nowrap text-center border-r border-b border-slate-200 dark:border-slate-800 shadow-xs">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs border border-slate-200 dark:border-slate-700">
+                                        {{ method_exists($visitsData, 'firstItem') && $visitsData->firstItem() ? $visitsData->firstItem() + $index : $loop->iteration }}
+                                    </span>
                                 </td>
                                 <td class="px-5 py-4 whitespace-nowrap border-b border-slate-200 dark:border-slate-800">
                                     <span class="font-bold text-slate-900 dark:text-white block">

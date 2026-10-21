@@ -94,8 +94,8 @@
                     <a href="{{ route('home') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('home') ? 'bg-emerald-600 dark:bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
                         Beranda
                     </a>
-                    <a href="{{ route('public.layanan') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.layanan') ? 'bg-emerald-600 dark:bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
-                        Layanan UKS
+                    <a href="{{ route('public.petugas') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.petugas') ? 'bg-emerald-600 dark:bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
+                        Petugas UKS
                     </a>
                     <a href="{{ route('public.ringkasan') }}" class="px-4 py-2 rounded-xl text-xs font-semibold transition {{ request()->routeIs('public.ringkasan') ? 'bg-emerald-600 dark:bg-emerald-800 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700/50' }}">
                         Ringkasan
@@ -141,7 +141,7 @@
         <!-- Mobile Navigation Strip -->
         <div class="md:hidden flex items-center justify-start gap-2 border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 bg-white/95 dark:bg-slate-900/95 overflow-x-auto text-xs font-medium hide-scrollbar">
             <a href="{{ route('home') }}" class="shrink-0 px-3 py-1.5 rounded-lg {{ request()->routeIs('home') ? 'bg-teal-600 text-white font-bold' : 'text-slate-600 dark:text-slate-400' }}">Beranda</a>
-            <a href="{{ route('public.layanan') }}" class="shrink-0 px-3 py-1.5 rounded-lg {{ request()->routeIs('public.layanan') ? 'bg-teal-600 text-white font-bold' : 'text-slate-600 dark:text-slate-400' }}">Layanan</a>
+            <a href="{{ route('public.petugas') }}" class="shrink-0 px-3 py-1.5 rounded-lg {{ request()->routeIs('public.petugas') ? 'bg-teal-600 text-white font-bold' : 'text-slate-600 dark:text-slate-400' }}">Petugas</a>
             <a href="{{ route('public.ringkasan') }}" class="shrink-0 px-3 py-1.5 rounded-lg {{ request()->routeIs('public.ringkasan') ? 'bg-teal-600 text-white font-bold' : 'text-slate-600 dark:text-slate-400' }}">Ringkasan</a>
             <a href="{{ route('public.kunjungan') }}" class="shrink-0 px-3 py-1.5 rounded-lg {{ request()->routeIs('public.kunjungan') ? 'bg-teal-600 text-white font-bold' : 'text-slate-600 dark:text-slate-400' }}">Kunjungan</a>
             <a href="{{ route('public.kunjungan.create') }}" class="shrink-0 px-3 py-1.5 rounded-lg {{ request()->routeIs('public.kunjungan.create') ? 'bg-teal-600 text-white font-bold' : 'text-slate-600 dark:text-slate-400' }}">Isi</a>
@@ -196,7 +196,7 @@
                     <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-4">Navigasi Utama</h4>
                     <ul class="space-y-2 text-xs">
                         <li><a href="{{ route('home') }}" class="hover:text-teal-400 transition">Beranda</a></li>
-                        <li><a href="{{ route('public.layanan') }}" class="hover:text-teal-400 transition">Layanan</a></li>
+                        <li><a href="{{ route('public.petugas') }}" class="hover:text-teal-400 transition">Petugas UKS</a></li>
                         <li><a href="{{ route('public.ringkasan') }}" class="hover:text-teal-400 transition">Ringkasan</a></li>
                         <li><a href="{{ route('public.kunjungan.create') }}" class="hover:text-teal-400 transition">Kunjungan</a></li>
                         <li><a href="{{ route('public.hubungi') }}" class="hover:text-rose-400 transition text-rose-400 font-semibold">Hubungi Darurat</a></li>

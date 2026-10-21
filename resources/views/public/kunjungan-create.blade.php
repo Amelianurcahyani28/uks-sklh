@@ -46,17 +46,15 @@
 
                     {{-- Jurusan Siswa --}}
                     <div class="uk-field-group">
-                        <label for="major">Jurusan  <span class="uk-required">*</span></label>
-                        <input type="text" id="major" name="major" value="{{ old('major') }}" placeholder="Contoh: PPLG, TJKT, DKV, Animasi, TO..." list="major-list">
-                        <datalist id="major-list">
-                            <option value="PPLG">Pengembangan Perangkat Lunak & Gim</option>
-                            <option value="TJKT">Teknik Jaringan Komputer & Telekomunikasi</option>
-                            <option value="DKV">Desain Komunikasi Visual</option>
-                            <option value="Animasi">Animasi</option>
-                            <option value="TO">Teknik Otomotif</option>
-                            <option value="AKL">Akuntansi & Keuangan Lembaga</option>
-                            <option value="MPLB">Manajemen Perkantoran & Layanan Bisnis</option>
-                        </datalist>
+                        <label for="major">Jurusan <span class="uk-required">*</span></label>
+                        <select name="major" id="major" required>
+                            <option value="" disabled {{ old('major') ? '' : 'selected' }}>-- Pilih Jurusan --</option>
+                            <option value="PPLG" @selected(old('major') == 'PPLG')>PPLG</option>
+                            <option value="BCF" @selected(old('major') == 'BCF')>BCF</option>
+                            <option value="ANIM" @selected(old('major') == 'ANIM')>ANIM</option>
+                            <option value="TO" @selected(old('major') == 'TO')>TO</option>
+                            <option value="TPFL" @selected(old('major') == 'TPFL')>TPFL</option>
+                        </select>
                     </div>
 
                     {{-- Jenis Kelamin --}}
@@ -125,7 +123,20 @@
         function fillFromStudent(student, skipName = false) {
             if (!skipName && student.name) nameInput.value = student.name;
             if (student.class_name && student.class_name !== '-') classInput.value = student.class_name;
-            if (student.major && majorInput) majorInput.value = student.major;
+            if (student.major && majorInput) {
+                const upperMajor = student.major.toUpperCase().trim();
+                let matched = false;
+                for (let i = 0; i < majorInput.options.length; i++) {
+                    if (majorInput.options[i].value.toUpperCase() === upperMajor) {
+                        majorInput.selectedIndex = i;
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) {
+                    majorInput.value = student.major;
+                }
+            }
             if (student.gender && genderInput) genderInput.value = student.gender;
         }
 

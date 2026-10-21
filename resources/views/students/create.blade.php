@@ -38,7 +38,14 @@
 
         <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Jurusan (Opsional)</label>
-            <input type="text" name="major" value="{{ old('major') }}" placeholder="Contoh: PPLG, TJKT, DKV, Animasi, TO..." class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm focus:border-teal-600 focus:bg-white focus:ring-teal-600 transition">
+            <select name="major" class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm focus:border-teal-600 focus:bg-white focus:ring-teal-600 transition">
+                <option value="">-- Pilih Jurusan --</option>
+                <option value="PPLG" @selected(old('major') === 'PPLG')>PPLG</option>
+                <option value="BCF" @selected(old('major') === 'BCF')>BCF</option>
+                <option value="ANIM" @selected(old('major') === 'ANIM')>ANIM</option>
+                <option value="TO" @selected(old('major') === 'TO')>TO</option>
+                <option value="TPFL" @selected(old('major') === 'TPFL')>TPFL</option>
+            </select>
         </div>
 
         <div>
