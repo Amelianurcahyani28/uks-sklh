@@ -21,7 +21,9 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/');
 
-        $response->assertOk()->assertViewIs('home');
+        $response->assertOk()
+            ->assertViewIs('home')
+            ->assertDontSee('Siswa Merasa Sakit di Sekolah?');
     }
 
     public function test_guest_is_redirected_from_layanan_to_home(): void
@@ -38,8 +40,7 @@ class ExampleTest extends TestCase
         $response->assertOk()
             ->assertSee('Pertolongan Pertama Pada Kecelakaan')
             ->assertSee('Fasilitas Dan Peralatan Medis UKS')
-            ->assertSee('Alur Pelayanan Saat Merasa Sakit di Sekolah')
-            ->assertSee('Petugas UKS Siaga Hari Ini');
+            ->assertSee('Alur Pelayanan Saat Merasa Sakit di Sekolah');
     }
 
     public function test_guest_can_view_public_ringkasan(): void
@@ -255,11 +256,53 @@ class ExampleTest extends TestCase
         $this->assertTrue(str_contains((string) $response->headers->get('content-disposition'), 'Laporan-Kunjungan-UKS-2026-10-15.xlsx'));
     }
 
+    public function test_authenticated_admin_can_filter_and_export_visits_by_date_range(): void
+    {
+        $user = User::factory()->create();
+
+        $student = Student::create([
+            'name' => 'Siswa Rentang Tanggal',
+            'nis' => 'UKS-RANGE',
+            'class_name' => 'X BCF 1',
+            'major' => 'BCF',
+            'gender' => 'P',
+        ]);
+
+        UksVisit::create([
+            'student_id' => $student->id,
+            'visit_date' => '2026-10-10',
+            'complaint' => 'Pusing rentang tanggal',
+            'status' => 'ditangani',
+        ]);
+
+        // 1. Filter halaman admin ringkasan dengan rentang tanggal awal dan akhir
+        $responseFilter = $this->actingAs($user)->get('/admin/ringkasan?start_date=2026-10-01&end_date=2026-10-20');
+        $responseFilter->assertOk()
+            ->assertSee('Tanggal Awal')
+            ->assertSee('Tanggal Akhir')
+            ->assertSee('Pusing rentang tanggal');
+
+        // 2. Export ke Excel dengan rentang tanggal
+        $responseExport = $this->actingAs($user)->get('/admin/kunjungan/export?start_date=2026-10-01&end_date=2026-10-20');
+        $responseExport->assertOk();
+        $this->assertTrue(str_contains((string) $responseExport->headers->get('content-disposition'), '2026-10-01-sd-2026-10-20.xlsx'));
+    }
+
     public function test_guest_can_view_public_petugas_page(): void
     {
-        Petugas::factory()->create([
+        $todayDay = now()->dayOfWeekIso;
+        $petugas = Petugas::factory()->create([
             'name' => 'Ns. Siti Rahmawati',
             'role_title' => 'Tenaga Medis UKS',
+            'status' => 'aktif',
+        ]);
+
+        PetugasJadwal::create([
+            'petugas_id' => $petugas->id,
+            'day_number' => $todayDay,
+            'day' => PetugasJadwal::allDaysList()[$todayDay] ?? 'Senin',
+            'shift_time' => '07:30 - 15:30 WIB',
+            'room' => 'Ruang UKS',
             'status' => 'aktif',
         ]);
 
@@ -267,8 +310,40 @@ class ExampleTest extends TestCase
 
         $response->assertOk()
             ->assertViewIs('public.petugas')
-            ->assertSee('Ns. Siti Rahmawati')
-            ->assertSee('Tenaga Medis UKS');
+            ->assertSee('Agenda Piket Hari Ini')
+            ->assertDontSee('Daftar Tim UKS SMKN 1 Ciomas')
+            ->assertDontSee('Siswa Merasa Sakit di Sekolah?');
+
+        if ($todayDay >= 1 && $todayDay <= 5) {
+            $response->assertSee('Ns. Siti Rahmawati')
+                ->assertSee('Tenaga Medis UKS');
+        }
+    }
+
+    public function test_guest_can_view_today_petugas_schedule_on_public_petugas_page(): void
+    {
+        $todayDay = now()->dayOfWeekIso;
+        $petugas = Petugas::factory()->create([
+            'name' => 'Petugas Jaga Hari Ini',
+            'role_title' => 'Koordinator PMR',
+            'status' => 'aktif',
+        ]);
+
+        PetugasJadwal::create([
+            'petugas_id' => $petugas->id,
+            'day_number' => $todayDay,
+            'day' => PetugasJadwal::allDaysList()[$todayDay] ?? 'Senin',
+            'shift_time' => '08:00 - 14:00 WIB',
+            'room' => 'Ruang UKS',
+            'status' => 'aktif',
+        ]);
+
+        $response = $this->get('/petugas');
+
+        $response->assertOk()
+            ->assertSee('Agenda Piket Hari Ini')
+            ->assertSee('Petugas Jaga Hari Ini')
+            ->assertSee('08:00 - 14:00 WIB');
     }
 
     public function test_guest_cannot_access_admin_petugas(): void
@@ -289,6 +364,12 @@ class ExampleTest extends TestCase
 
         $response->assertOk()
             ->assertViewIs('petugas.index')
+            ->assertViewHas('daysList')
+            ->assertSee('Tambah Petugas Baru')
+            ->assertSee('modalTambahPetugas')
+            ->assertSee('Kelas')
+            ->assertSee('Jurusan')
+            ->assertDontSee('Lihat Tampilan Publik')
             ->assertSee('Dra. Hj. Nurjanah');
     }
 
@@ -299,6 +380,8 @@ class ExampleTest extends TestCase
         $response = $this->actingAs($user)->post('/admin/petugas', [
             'name' => 'Petugas Baru UKS',
             'role_title' => 'Petugas P3K',
+            'class_name' => 'XI PPLG 2',
+            'major' => 'PPLG',
             'gender' => 'L',
             'phone' => '081299998888',
             'schedule' => 'Senin - Jumat',
@@ -310,6 +393,8 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('petugas', [
             'name' => 'Petugas Baru UKS',
             'role_title' => 'Petugas P3K',
+            'class_name' => 'XI PPLG 2',
+            'major' => 'PPLG',
         ]);
     }
 
@@ -319,11 +404,14 @@ class ExampleTest extends TestCase
         $petugas = Petugas::factory()->create([
             'name' => 'Nama Lama',
             'role_title' => 'Staf UKS',
+            'major' => 'BCF',
         ]);
 
         $response = $this->actingAs($user)->put('/admin/petugas/'.$petugas->id, [
             'name' => 'Nama Baru Petugas',
             'role_title' => 'Pembina UKS',
+            'class_name' => 'XII ANIM 1',
+            'major' => 'ANIM',
             'gender' => 'P',
             'phone' => '081200001111',
             'schedule' => 'Setiap Hari',
@@ -336,7 +424,54 @@ class ExampleTest extends TestCase
             'id' => $petugas->id,
             'name' => 'Nama Baru Petugas',
             'role_title' => 'Pembina UKS',
+            'class_name' => 'XII ANIM 1',
+            'major' => 'ANIM',
         ]);
+    }
+
+    public function test_petugas_class_name_automatically_includes_major(): void
+    {
+        $user = User::factory()->create();
+
+        // 1. Simpan Petugas baru dengan kelas "X 1" dan jurusan "BCF"
+        $createResponse = $this->actingAs($user)->post('/admin/petugas', [
+            'name' => 'Siswa Petugas 1',
+            'role_title' => 'Anggota PMR',
+            'class_name' => 'X 1',
+            'major' => 'BCF',
+            'gender' => 'P',
+            'status' => 'aktif',
+        ]);
+
+        $createResponse->assertRedirect('/admin/petugas');
+        $this->assertDatabaseHas('petugas', [
+            'name' => 'Siswa Petugas 1',
+            'class_name' => 'X BCF 1',
+            'major' => 'BCF',
+        ]);
+
+        $petugas = Petugas::where('name', 'Siswa Petugas 1')->firstOrFail();
+
+        // 2. Update Petugas dengan kelas "XI" dan jurusan "BCF"
+        $updateResponse = $this->actingAs($user)->put('/admin/petugas/'.$petugas->id, [
+            'name' => 'Siswa Petugas 1',
+            'role_title' => 'Anggota PMR',
+            'class_name' => 'XI',
+            'major' => 'BCF',
+            'gender' => 'P',
+            'status' => 'aktif',
+        ]);
+
+        $updateResponse->assertRedirect('/admin/petugas');
+        $this->assertDatabaseHas('petugas', [
+            'id' => $petugas->id,
+            'class_name' => 'XI BCF',
+            'major' => 'BCF',
+        ]);
+
+        // 3. Pastikan tampil di tabel halaman admin petugas
+        $indexResponse = $this->actingAs($user)->get('/admin/petugas');
+        $indexResponse->assertOk()->assertSee('XI BCF');
     }
 
     public function test_admin_can_delete_petugas(): void
@@ -362,7 +497,9 @@ class ExampleTest extends TestCase
 
         $response->assertOk()
             ->assertViewIs('petugas.jadwal')
-            ->assertSee('Jadwal Petugas UKS');
+            ->assertSee('Jadwal Petugas UKS')
+            ->assertSee('Kelas')
+            ->assertSee('Lihat Tampilan Publik');
     }
 
     public function test_admin_can_create_jadwal_petugas(): void
@@ -376,7 +513,7 @@ class ExampleTest extends TestCase
             'day_number' => 1,
             'petugas_id' => $petugas->id,
             'shift_time' => '07:30 - 15:30 WIB',
-            'room' => 'Ruang UKS Utama',
+            'room' => 'Ruang UKS',
             'notes' => 'Piket Pemeriksaan Siswa',
             'status' => 'aktif',
         ]);
@@ -400,7 +537,7 @@ class ExampleTest extends TestCase
             'day' => 'Selasa',
             'petugas_id' => $petugasLama->id,
             'shift_time' => '07:30 - 15:30 WIB',
-            'room' => 'Ruang UKS Utama',
+            'room' => 'Ruang UKS',
             'notes' => 'Tugas awal',
             'status' => 'aktif',
         ]);
@@ -432,7 +569,7 @@ class ExampleTest extends TestCase
             'day' => 'Rabu',
             'petugas_id' => $petugas->id,
             'shift_time' => '07:30 - 15:30 WIB',
-            'room' => 'Ruang UKS Utama',
+            'room' => 'Ruang UKS',
             'status' => 'aktif',
         ]);
 
@@ -454,8 +591,8 @@ class ExampleTest extends TestCase
             'gender' => 'L',
             'phone' => '08123456789',
             'piket_day' => 4, // Kamis
-            'shift_time' => '07:30 - 15:30 WIB',
-            'room' => 'Ruang UKS Utama',
+            'shift_time' => '06:30 - 15:00 WIB',
+            'room' => 'Ruang UKS',
             'status' => 'aktif',
             'bio' => 'Petugas uji coba',
         ]);
@@ -464,34 +601,33 @@ class ExampleTest extends TestCase
 
         $petugas = Petugas::where('name', 'Petugas Otomatis')->first();
         $this->assertNotNull($petugas);
-        $this->assertEquals('Kamis (07:30 - 15:30 WIB)', $petugas->schedule);
+        $this->assertEquals('Kamis (06:30 - 15:00 WIB)', $petugas->schedule);
 
         $this->assertDatabaseHas('petugas_jadwals', [
             'petugas_id' => $petugas->id,
             'day_number' => 4,
             'day' => 'Kamis',
-            'shift_time' => '07:30 - 15:30 WIB',
-            'room' => 'Ruang UKS Utama',
+            'shift_time' => '06:30 - 15:00 WIB',
+            'room' => 'Ruang UKS',
         ]);
     }
 
-    public function test_admin_dashboard_displays_senin_jumat_schedule(): void
+    public function test_admin_dashboard_displays_today_petugas_schedule(): void
     {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk()
-            ->assertSee('Jadwal Piket Petugas UKS (Senin – Jumat)')
-            ->assertSee('Hari Senin')
-            ->assertSee('Hari Jumat');
+            ->assertSee('Agenda Piket Hari Ini')
+            ->assertSee('Jadwal Piket Petugas UKS — Hari');
     }
 
-    public function test_beranda_displays_only_today_petugas_schedule(): void
+    public function test_beranda_does_not_display_petugas_schedule(): void
     {
         $response = $this->get('/');
 
         $response->assertOk()
-            ->assertSee('Petugas UKS Siaga Hari Ini');
+            ->assertDontSee('Petugas UKS Siaga Hari Ini');
     }
 }

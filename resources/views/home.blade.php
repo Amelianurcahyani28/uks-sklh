@@ -4,7 +4,7 @@
 <main class="space-y-16 pb-16">
     <!-- Hero Section Full Width: Proporsional & Nyaman Dilihat -->
     <section class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-xl overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
+        <div class="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center relative z-10">
                 <!-- Sisi Kiri: Teks & Aksi -->
                 <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
@@ -116,163 +116,9 @@
         </div>
     </section>
 
-    <!-- Section: Petugas UKS Siaga Hari Ini (Tampilan Khusus Per Hari) -->
-    <section id="petugas-hari-ini" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
-        <div class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-8 md:p-10 shadow-sm space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-                <div class="space-y-1">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
-                        <span>Jadwal Petugas Hari Ini</span>
-                    </div>
-                    <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-                        Petugas UKS Siaga Hari Ini
-                    </h2>
-                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-                        Petugas jaga yang siap melayani dan mendampingi siswa pada hari <span class="font-bold text-teal-600 dark:text-teal-400">{{ $todayFormatted }}</span>.
-                    </p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2 shrink-0">
-                    <span class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 border border-slate-200 dark:border-slate-700">
-                        <span>🕒</span>
-                        <span>Jam Operasional: 07:30 – 15:30 WIB</span>
-                    </span>
-                    <a href="{{ route('public.petugas') }}" class="px-3.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold transition border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
-                        <span>Semua Petugas</span>
-                        <span>→</span>
-                    </a>
-                </div>
-            </div>
-
-            @if($todaySchedules->isNotEmpty())
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ min(count($todaySchedules), 3) }} gap-5">
-                    @foreach($todaySchedules as $schedule)
-                        @php
-                            $petugas = $schedule->petugas;
-                        @endphp
-                        @if($petugas)
-                            <div class="rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100/70 dark:from-slate-950 dark:to-slate-900/90 border border-slate-200/90 dark:border-slate-800 p-5 shadow-xs hover:shadow-md transition flex flex-col justify-between">
-                                <div class="space-y-3">
-                                    <div class="flex items-center justify-between">
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300/80 dark:border-emerald-800">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                            <span>Sedang Bertugas Hari Ini</span>
-                                        </span>
-                                        <span class="text-[10px] font-semibold text-slate-400">
-                                            {{ $schedule->room ?? 'Ruang UKS' }}
-                                        </span>
-                                    </div>
-
-                                    <div class="flex items-center gap-3.5 pt-1">
-                                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br {{ $petugas->gender === 'L' ? 'from-teal-500 to-emerald-600' : 'from-rose-400 to-teal-600' }} text-white font-extrabold text-base flex items-center justify-center shadow-sm shrink-0">
-                                            {{ strtoupper(mb_substr($petugas->name, 0, 2)) }}
-                                        </div>
-                                        <div>
-                                            <h4 class="text-sm font-extrabold text-slate-900 dark:text-white leading-snug">
-                                                {{ $petugas->name }}
-                                            </h4>
-                                            <p class="text-xs font-semibold text-teal-600 dark:text-teal-400 mt-0.5">
-                                                {{ $petugas->role_title }}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="pt-2 text-xs space-y-1.5">
-                                        <div class="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                                            <span class="text-emerald-600 dark:text-emerald-400 font-bold">🕒 Jam Piket:</span>
-                                            <span class="font-bold text-slate-900 dark:text-slate-200">{{ $schedule->shift_time }}</span>
-                                        </div>
-                                        @if($schedule->notes)
-                                            <p class="text-[11px] text-slate-500 dark:text-slate-400 italic">
-                                                "{{ $schedule->notes }}"
-                                            </p>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                @if($petugas->phone)
-                                    @php
-                                        $cleanPhone = preg_replace('/[^0-9]/', '', $petugas->phone);
-                                        $waNumber = str_starts_with($cleanPhone, '0') ? '62' . substr($cleanPhone, 1) : $cleanPhone;
-                                    @endphp
-                                    <div class="mt-4 pt-3 border-t border-slate-200/70 dark:border-slate-800 flex items-center justify-between gap-2 text-xs">
-                                        <div>
-                                            <span class="text-[10px] text-slate-400 block">Kontak:</span>
-                                            <span class="font-bold text-slate-700 dark:text-slate-300 text-xs">{{ $petugas->phone }}</span>
-                                        </div>
-                                        <a href="https://wa.me/{{ $waNumber }}?text={{ urlencode('Halo Bapak/Ibu ' . $petugas->name . ' (Petugas UKS SMKN 1 Ciomas), saya ingin bertanya seputar layanan UKS.') }}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-bold text-[11px] flex items-center gap-1 transition border border-emerald-200 dark:border-emerald-800">
-                                            <span>WhatsApp</span>
-                                            <span>↗</span>
-                                        </a>
-                                    </div>
-                                @endif
-                            </div>
-                        @endif
-                    @endforeach
-                </div>
-            @elseif(! $isWeekday)
-                <!-- Tampilan Khusus Akhir Pekan (Sabtu / Minggu) -->
-                <div class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/50 p-6 sm:p-8 space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/80 dark:border-slate-800">
-                        <div>
-                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 mb-1">
-                                Libur Akhir Pekan
-                            </div>
-                            <h4 class="text-sm font-extrabold text-slate-900 dark:text-white">
-                                Pelayanan Reguler UKS Libur Hari {{ $todayDayName }}
-                            </h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                Unit Kesehatan Sekolah melayani kegiatan belajar mengajar setiap hari Senin sampai Jumat (07:30 – 15:30 WIB).
-                            </p>
-                        </div>
-
-                        <a href="{{ route('public.hubungi') }}" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-xs transition shrink-0 flex items-center gap-1">
-                            <span>Kontak Darurat</span>
-                            <span>→</span>
-                        </a>
-                    </div>
-
-                    @if($nextMondaySchedules && $nextMondaySchedules->isNotEmpty())
-                        <div class="space-y-2">
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                                Petugas Jaga Siaga Hari Kerja Berikutnya (Senin):
-                            </span>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                @foreach($nextMondaySchedules as $schedule)
-                                    @php $p = $schedule->petugas; @endphp
-                                    @if($p)
-                                        <div class="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-                                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br {{ $p->gender === 'L' ? 'from-teal-500 to-emerald-600' : 'from-rose-400 to-teal-600' }} text-white font-extrabold text-sm flex items-center justify-center shrink-0">
-                                                {{ strtoupper(mb_substr($p->name, 0, 2)) }}
-                                            </div>
-                                            <div class="min-w-0">
-                                                <p class="text-xs font-bold text-slate-900 dark:text-white truncate">{{ $p->name }}</p>
-                                                <p class="text-[10px] text-teal-600 dark:text-teal-400 font-semibold">{{ $p->role_title }}</p>
-                                                <p class="text-[10px] text-slate-400">🕒 Senin, {{ $schedule->shift_time }}</p>
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            @else
-                <div class="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-8 text-center space-y-2 bg-slate-50/50 dark:bg-slate-950/40">
-                    <p class="text-sm font-bold text-slate-700 dark:text-slate-300">
-                        Tidak ada petugas reguler yang dijadwalkan pada hari {{ $todayDayName }}.
-                    </p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">
-                        Ruang UKS tetap dapat diakses untuk penanganan darurat melalui koordinasi guru piket atau pihak sekolah.
-                    </p>
-                </div>
-            @endif
-        </div>
-    </section>
 
     <!-- Section 1: Pilar Layanan UKS (Program Unggulan) -->
-    <section id="layanan" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="layanan" class="w-full px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div id="pilar-layanan" class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 md:p-12 shadow-sm space-y-8 scroll-mt-24">
             <div class="text-center max-w-2xl mx-auto">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-800 uppercase tracking-wider mb-2">
@@ -399,7 +245,7 @@
                         </div>
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white">Prosedur Rujukan Dan Koordinasi Cepat</h3>
                         <p class="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                            Protokol penanganan jika kondisi siswa membutuhkan bantuan medis spesialis atau pertolongan dokter tingkat lanjut.
+                            Protokol penanganan jika kondisi siswa membutuhkan bantuan medis spesialis atau pertolongan dokter Kelas lanjut.
                         </p>
                         <ul class="mt-4 space-y-2 text-xs text-slate-600 dark:text-slate-400">
                             <li class="flex items-start gap-2">
@@ -426,7 +272,7 @@
     </section>
 
     <!-- Section 2: Fasilitas & Sarana Medis UKS -->
-    <section id="fasilitas" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="fasilitas" class="w-full px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 md:p-12 shadow-sm space-y-8">
             <div class="text-center max-w-2xl mx-auto">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-800 uppercase tracking-wider mb-2">
@@ -477,7 +323,7 @@
     </section>
 
     <!-- Section 3: Alur Pelayanan (SOP Siswa Sakit - Berwarna & Terstruktur) -->
-    <section id="alur" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="alur" class="w-full px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 md:p-12 shadow-sm space-y-8">
             <div class="text-center max-w-2xl mx-auto">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 uppercase tracking-wider mb-2">
@@ -544,7 +390,7 @@
     </section>
 
     <!-- Section 4: Tim Pengelola & Kemitraan Pelayanan -->
-    <section id="tim" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-24">
+    <section id="tim" class="w-full px-4 sm:px-6 lg:px-8 scroll-mt-24">
         <div class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 md:p-12 shadow-sm space-y-8">
             <div class="text-center max-w-2xl mx-auto">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-800 uppercase tracking-wider mb-2">
@@ -579,24 +425,6 @@
         </div>
     </section>
 
-    <!-- Banner Call to Action Bawah -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="rounded-3xl bg-gradient-to-r from-emerald-700 via-teal-700 to-slate-900 p-8 sm:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
-            <div class="space-y-2 text-center md:text-left">
-                <h3 class="text-xl sm:text-2xl font-black tracking-tight">Siswa Merasa Sakit di Sekolah?</h3>
-                <p class="text-xs sm:text-sm text-teal-100 max-w-xl">
-                    Silakan lapor ke ruang UKS dan catat formulir kunjungan agar petugas dapat memberikan perawatan dan obat yang sesuai.
-                </p>
-            </div>
-            <div class="flex flex-wrap items-center gap-3 shrink-0">
-                <a href="{{ route('public.kunjungan.create') }}" class="px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs shadow-lg transition">
-                    Isi Kunjungan Siswa
-                </a>
-                <a href="{{ route('public.hubungi') }}" class="px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg transition">
-                    Hubungi Darurat
-                </a>
-            </div>
-        </div>
-    </section>
+
 </main>
 @endsection

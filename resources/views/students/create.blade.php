@@ -23,7 +23,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('students.store') }}" class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-xs space-y-5">
+    <form method="POST" action="{{ route('students.store') }}" autocomplete="off" class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-xs space-y-5">
         @csrf
 
         <div>
@@ -32,19 +32,21 @@
         </div>
 
         <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Kelas / Rombel *</label>
-            <input type="text" name="class_name" value="{{ old('class_name') }}" required placeholder="Contoh: VII-A / 10 MIPA 1" class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm focus:border-teal-600 focus:bg-white focus:ring-teal-600 transition">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Jurusan (Khusus SMK)</label>
+            <select name="major" id="student_create_major" class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm focus:border-teal-600 focus:bg-white focus:ring-teal-600 transition cursor-pointer">
+                <option value="">-- Pilih Jurusan / Umum --</option>
+                <option value="PPLG" @selected(old('major') === 'PPLG')>PPLG (Pengembangan Perangkat Lunak dan Gim)</option>
+                <option value="BCF" @selected(old('major') === 'BCF')>BCF (Broadcasting dan Perfilman)</option>
+                <option value="ANIM" @selected(old('major') === 'ANIM')>ANIM (Animasi)</option>
+                <option value="TO" @selected(old('major') === 'TO')>TO (Teknik Otomotif)</option>
+                <option value="TPFL" @selected(old('major') === 'TPFL')>TPFL (Teknik Pengelasan dan Fabrikasi Logam)</option>
+            </select>
         </div>
 
         <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Jurusan (Opsional)</label>
-            <select name="major" class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm focus:border-teal-600 focus:bg-white focus:ring-teal-600 transition">
-                <option value="">-- Pilih Jurusan --</option>
-                <option value="PPLG" @selected(old('major') === 'PPLG')>PPLG</option>
-                <option value="BCF" @selected(old('major') === 'BCF')>BCF</option>
-                <option value="ANIM" @selected(old('major') === 'ANIM')>ANIM</option>
-                <option value="TO" @selected(old('major') === 'TO')>TO</option>
-                <option value="TPFL" @selected(old('major') === 'TPFL')>TPFL</option>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Kelas / Rombel *</label>
+            <select name="class_name" id="student_create_class" required class="w-full rounded-xl border-slate-200 bg-slate-50/50 text-sm focus:border-teal-600 focus:bg-white focus:ring-teal-600 transition cursor-pointer">
+                <!-- Opsi kelas terisi otomatis sesuai jurusan yang dipilih -->
             </select>
         </div>
 
@@ -76,4 +78,99 @@
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const majorSelect = document.getElementById('student_create_major');
+        const classSelect = document.getElementById('student_create_class');
+        const initialSelectedClass = @json(old('class_name', ''));
+
+        const majorClasses = {
+            'PPLG': ['PPLG 1', 'PPLG 2', 'PPLG 3', 'PPLG 4'],
+            'BCF': ['BCF 1', 'BCF 2', 'BCF 3', 'BCF 4'],
+            'ANIM': ['ANIM 1', 'ANIM 2', 'ANIM 3', 'ANIM 4'],
+            'TO': ['TO 1', 'TO 2', 'TO 3', 'TO 4'],
+            'TPFL': ['TPFL 1', 'TPFL 2', 'TPFL 3', 'TPFL 4'],
+        };
+
+        function cleanString(str) {
+            return (str || '').replace(/[\s\-_]/g, '').toUpperCase();
+        }
+
+        function populateClassOptions(major, selectedVal) {
+            if (!classSelect) return;
+            classSelect.innerHTML = '';
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = major ? `-- Pilih Kelas ${major} --` : '-- Pilih Kelas --';
+            classSelect.appendChild(placeholder);
+
+            const targetClean = cleanString(selectedVal);
+            let matched = false;
+
+            if (major && majorClasses[major]) {
+                const levels = ['X', 'XI', 'XII'];
+                levels.forEach(lvl => {
+                    const optGroup = document.createElement('optgroup');
+                    optGroup.label = `Kelas ${lvl}`;
+
+                    majorClasses[major].forEach(rombel => {
+                        const fullClassName = `${lvl} ${rombel}`;
+                        const opt = document.createElement('option');
+                        opt.value = fullClassName;
+                        opt.textContent = fullClassName;
+
+                        if (targetClean && (cleanString(fullClassName) === targetClean || targetClean === cleanString(`${lvl}${rombel}`))) {
+                            opt.selected = true;
+                            matched = true;
+                        }
+
+                        optGroup.appendChild(opt);
+                    });
+
+                    classSelect.appendChild(optGroup);
+                });
+            } else {
+                const umumGroups = {
+                    'Kelas X': ['X 1', 'X 2', 'X 3', 'X 4'],
+                    'Kelas XI': ['XI 1', 'XI 2', 'XI 3', 'XI 4'],
+                    'Kelas XII': ['XII 1', 'XII 2', 'XII 3', 'XII 4'],
+                    'SMP / MTs': ['VII A', 'VII B', 'VIII A', 'VIII B', 'IX A', 'IX B'],
+                };
+                Object.entries(umumGroups).forEach(([label, list]) => {
+                    const group = document.createElement('optgroup');
+                    group.label = label;
+                    list.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item;
+                        opt.textContent = item;
+                        if (targetClean && cleanString(item) === targetClean) {
+                            opt.selected = true;
+                            matched = true;
+                        }
+                        group.appendChild(opt);
+                    });
+                    classSelect.appendChild(group);
+                });
+            }
+
+            if (selectedVal && !matched) {
+                const optCustom = document.createElement('option');
+                optCustom.value = selectedVal;
+                optCustom.textContent = `${selectedVal} (Tersimpan)`;
+                optCustom.selected = true;
+                classSelect.appendChild(optCustom);
+            }
+        }
+
+        if (majorSelect && classSelect) {
+            populateClassOptions(majorSelect.value, initialSelectedClass);
+
+            majorSelect.addEventListener('change', function () {
+                populateClassOptions(this.value, '');
+            });
+        }
+    });
+</script>
 @endsection

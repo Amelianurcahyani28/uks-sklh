@@ -20,9 +20,11 @@ class PetugasFactory extends Factory
         return [
             'name' => fake()->name(),
             'role_title' => fake()->randomElement(['Pembina UKS', 'Tenaga Medis UKS', 'Petugas P3K', 'Ketua PMR']),
+            'class_name' => fake()->randomElement(['X PPLG 1', 'XI BCF 2', 'XII ANIM 1', null]),
+            'major' => fake()->randomElement(['PPLG', 'BCF', 'ANIM', 'TO', 'TPFL', null]),
             'gender' => fake()->randomElement(['L', 'P']),
             'phone' => fake()->phoneNumber(),
-            'schedule' => 'Senin - Jumat (07:30 - 15:30)',
+            'schedule' => 'Senin - Jumat (06:30 - 15:00)',
             'status' => 'aktif',
             'bio' => fake()->sentence(),
             'photo' => null,

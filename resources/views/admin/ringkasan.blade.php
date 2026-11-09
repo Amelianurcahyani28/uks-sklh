@@ -83,12 +83,12 @@
     <!-- Filter & Pencarian Box (Sesuai Komponen Kunjungan Siswa) -->
     @if ($activeFilter !== 'students')
         <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-            <form method="GET" action="{{ route('admin.ringkasan') }}" class="space-y-3">
+            <form method="GET" action="{{ route('admin.ringkasan') }}" autocomplete="off" class="space-y-3">
                 <input type="hidden" name="filter" value="{{ $activeFilter }}">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <!-- Pencarian Kata Kunci -->
                     <div class="lg:col-span-2">
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama siswa, atau keluhan sakit..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
+                        <input type="text" name="q" value="{{ request('q') }}" autocomplete="off" placeholder="Cari nama siswa, atau keluhan sakit..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
                     </div>
 
                     <!-- Filter Status -->
@@ -121,22 +121,22 @@
                             <a href="{{ route('admin.ringkasan', ['filter' => 'today', 'period' => 'today']) }}" class="flex-1 text-center rounded-xl border border-teal-200 bg-teal-50 text-teal-700 hover:bg-teal-100 dark:border-teal-800/60 dark:bg-teal-900/40 dark:text-teal-300 dark:hover:bg-teal-900/60 text-xs font-bold px-2 py-2 transition {{ request('period') === 'today' || $activeFilter === 'today' ? 'ring-2 ring-teal-500 dark:ring-teal-400' : '' }}">
                                 Hari Ini
                             </a>
-                            <a href="{{ route('admin.ringkasan', ['filter' => 'all']) }}" class="flex-1 text-center rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800/60 dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60 text-xs font-bold px-2 py-2 transition {{ (!request()->hasAny(['period', 'date', 'month', 'q', 'status']) && $activeFilter === 'all') || ($activeFilter === 'all' && !request()->hasAny(['date', 'month', 'period'])) ? 'ring-2 ring-indigo-500 dark:ring-indigo-400' : '' }}">
+                            <a href="{{ route('admin.ringkasan', ['filter' => 'all']) }}" class="flex-1 text-center rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800/60 dark:bg-indigo-900/40 dark:text-indigo-300 dark:hover:bg-indigo-900/60 text-xs font-bold px-2 py-2 transition {{ (!request()->hasAny(['period', 'date', 'month', 'start_date', 'end_date', 'q', 'status']) && $activeFilter === 'all') || ($activeFilter === 'all' && !request()->hasAny(['date', 'month', 'start_date', 'end_date', 'period'])) ? 'ring-2 ring-indigo-500 dark:ring-indigo-400' : '' }}">
                                 Semua
                             </a>
                         </div>
                     </div>
 
-                    <!-- Filter Per Hari -->
+                    <!-- Filter Tanggal Awal (Sebelah Kiri) -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Per Hari (Tanggal)</label>
-                        <input type="date" name="date" value="{{ request('date') }}" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tanggal Awal</label>
+                        <input type="date" name="start_date" value="{{ request('start_date') }}" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600">
                     </div>
 
-                    <!-- Filter Per Bulan -->
+                    <!-- Filter Tanggal Akhir (Sebelah Kanan) -->
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Per Bulan</label>
-                        <input type="month" name="month" value="{{ request('month') }}" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tanggal Akhir</label>
+                        <input type="date" name="end_date" value="{{ request('end_date') }}" onchange="this.form.submit()" class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600">
                     </div>
                 </div>
             </form>
@@ -151,6 +151,12 @@
                 <h3 class="text-base font-bold text-slate-900 dark:text-white">
                     @if ($activeFilter === 'students')
                         Manajemen Data Siswa Terdaftar
+                    @elseif (request()->filled('start_date') && request()->filled('end_date'))
+                        Catatan Kunjungan ({{ \Carbon\Carbon::parse(request('start_date'))->format('d/m/Y') }} – {{ \Carbon\Carbon::parse(request('end_date'))->format('d/m/Y') }})
+                    @elseif (request()->filled('start_date'))
+                        Catatan Kunjungan Mulai Tanggal {{ \Carbon\Carbon::parse(request('start_date'))->format('d/m/Y') }}
+                    @elseif (request()->filled('end_date'))
+                        Catatan Kunjungan Sampai Tanggal {{ \Carbon\Carbon::parse(request('end_date'))->format('d/m/Y') }}
                     @elseif (request()->filled('date'))
                         Catatan Kunjungan Tanggal {{ \Carbon\Carbon::parse(request('date'))->format('d/m/Y') }}
                     @elseif (request()->filled('month'))
@@ -165,9 +171,9 @@
 
             @if ($activeFilter === 'students')
                 <!-- Form Pencarian Khusus Siswa -->
-                <form method="GET" action="{{ route('admin.ringkasan') }}" class="flex flex-wrap items-center gap-2">
+                <form method="GET" action="{{ route('admin.ringkasan') }}" autocomplete="off" class="flex flex-wrap items-center gap-2">
                     <input type="hidden" name="filter" value="students">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, kelas, jurusan..." class="w-48 sm:w-60 lg:w-64 px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
+                    <input type="text" name="q" value="{{ request('q') }}" autocomplete="off" placeholder="Cari nama, kelas, jurusan..." class="w-48 sm:w-60 lg:w-64 px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
                     <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/30 active:scale-95 transition shrink-0 cursor-pointer">
                         <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -184,14 +190,6 @@
                         </svg>
                         <span>Export Excel (.xlsx)</span>
                     </a>
-
-                    <!-- Tombol Pilih Periode / Tanggal Khusus -->
-                    <button type="button" onclick="openExportModal()" class="inline-flex items-center gap-1.5 rounded-xl border border-emerald-600 dark:border-emerald-500 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 px-3 py-2.5 text-xs font-bold shadow-xs transition shrink-0 cursor-pointer" title="Pilih tanggal tertentu untuk diekspor ke Excel">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <span>Pilih Tanggal ▾</span>
-                    </button>
 
                     <a href="{{ route('kunjungan.create') }}" class="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 px-3.5 py-2.5 text-xs font-bold text-white shadow-xs transition shrink-0 cursor-pointer">
                         + Catat Kunjungan
@@ -273,7 +271,7 @@
                                     <td colspan="7" class="px-6 py-12 text-center text-slate-400">
                                         <p class="text-base font-semibold text-slate-600">Tidak ada data siswa ditemukan.</p>
                                         <a href="{{ route('students.create') }}" class="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-teal-700 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-teal-800 transition">
-                                            + Tambah Siswa Baru
+                                            Tambah Siswa Baru
                                         </a>
                                     </td>
                                 </tr>
@@ -414,120 +412,4 @@
     </div>
 </div>
 
-<!-- Modal Pilih Periode Export Excel -->
-<div id="exportModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <!-- Header Modal -->
-        <div class="px-6 py-5 bg-gradient-to-r from-emerald-600 to-teal-700 text-white flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <span class="p-2 rounded-xl bg-white/15 text-white">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </span>
-                <div>
-                    <h3 class="font-extrabold text-base text-white">Export Laporan Kunjungan ke Excel</h3>
-                    <p class="text-xs text-emerald-100">Pilih periode laporan per tanggal atau rentang waktu</p>
-                </div>
-            </div>
-            <button type="button" onclick="closeExportModal()" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer">
-                ✕
-            </button>
-        </div>
-
-        <!-- Body Modal -->
-        <div class="p-6 space-y-5">
-            <!-- 1. Opsi Export Per Hari (Tanggal Spesifik) -->
-            <div class="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/80 bg-emerald-50/50 dark:bg-emerald-950/30 space-y-2.5">
-                <div class="flex items-center justify-between">
-                    <label class="block text-xs font-bold text-emerald-900 dark:text-emerald-200">
-                        1. Laporan Khusus Per Tanggal:
-                    </label>
-                    <span class="text-[10px] bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 font-bold px-2 py-0.5 rounded-full">Per Tanggal</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="date" id="modal_export_date" value="{{ request('date') ?: now()->toDateString() }}" class="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-100 p-2.5 focus:border-emerald-600 focus:ring-emerald-600">
-                    <button type="button" onclick="downloadByDate()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition shrink-0 cursor-pointer">
-                        Download Tanggal Ini
-                    </button>
-                </div>
-            </div>
-
-            <!-- 2. Opsi Export Per Bulan -->
-            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-850 space-y-2.5">
-                <div class="flex items-center justify-between">
-                    <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">
-                        2. Laporan Rekap Per Bulan:
-                    </label>
-                    <span class="text-[10px] bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-full">Per Bulan</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="month" id="modal_export_month" value="{{ request('month') ?: now()->format('Y-m') }}" class="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-100 p-2.5 focus:border-teal-600 focus:ring-teal-600">
-                    <button type="button" onclick="downloadByMonth()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold text-xs shadow-xs transition shrink-0 cursor-pointer">
-                        Download Bulan Ini
-                    </button>
-                </div>
-            </div>
-
-            <!-- 3. Tombol Cepat: Hari Ini & Seluruh Riwayat -->
-            <div class="grid grid-cols-2 gap-3 pt-2">
-                <a href="{{ route('admin.kunjungan.export', ['period' => 'today']) }}" class="flex items-center justify-center gap-2 p-3 rounded-xl border border-teal-200 dark:border-teal-800 bg-white dark:bg-slate-800 hover:bg-teal-50 dark:hover:bg-teal-950/60 text-teal-800 dark:text-teal-200 text-xs font-bold transition shadow-xs text-center">
-                    <span>Hari Ini ({{ now()->format('d/m/Y') }})</span>
-                </a>
-                <a href="{{ route('admin.kunjungan.export') }}" class="flex items-center justify-center gap-2 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition shadow-xs text-center">
-                    <span>Semua Tanggal (Total)</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Footer Modal -->
-        <div class="px-6 py-4 bg-slate-50 dark:bg-slate-850 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-            <button type="button" onclick="closeExportModal()" class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer">
-                Tutup
-            </button>
-        </div>
-    </div>
-</div>
-
-<script>
-    function openExportModal() {
-        const modal = document.getElementById('exportModal');
-        if (modal) {
-            modal.classList.remove('hidden');
-        }
-    }
-
-    function closeExportModal() {
-        const modal = document.getElementById('exportModal');
-        if (modal) {
-            modal.classList.add('hidden');
-        }
-    }
-
-    function downloadByDate() {
-        const dateInput = document.getElementById('modal_export_date');
-        if (!dateInput || !dateInput.value) {
-            alert('Silakan pilih tanggal terlebih dahulu.');
-            return;
-        }
-        window.location.href = "{{ route('admin.kunjungan.export') }}?date=" + encodeURIComponent(dateInput.value);
-        closeExportModal();
-    }
-
-    function downloadByMonth() {
-        const monthInput = document.getElementById('modal_export_month');
-        if (!monthInput || !monthInput.value) {
-            alert('Silakan pilih bulan terlebih dahulu.');
-            return;
-        }
-        window.location.href = "{{ route('admin.kunjungan.export') }}?month=" + encodeURIComponent(monthInput.value);
-        closeExportModal();
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeExportModal();
-        }
-    });
-</script>
 @endsection

@@ -4,7 +4,7 @@
 <main class="space-y-12 pb-16">
     <!-- Hero Section Full Width: Menempel langsung di bawah navbar seperti Beranda -->
     <section class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-xl overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
+        <div class="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
             <div class="max-w-3xl space-y-5 text-left">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-emerald-800/80 border border-white/25 dark:border-emerald-600/40 text-white dark:text-emerald-200 text-xs font-bold shadow-sm backdrop-blur-md">
                     <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
@@ -23,7 +23,7 @@
     </section>
 
     <!-- Konten Kunjungan Dalam Container Rapi -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+    <div class="w-full px-4 sm:px-6 lg:px-8 space-y-8">
     {{-- Active Filter & Search Notification Bar --}}
     @if ($activeStatus || request()->filled('q'))
         <div class="uk-active-filter-bar">
@@ -64,11 +64,11 @@
                 
                 <div class="flex flex-col sm:flex-row sm:items-center gap-3 shrink-0">
                     <!-- Form Pencarian Cepat -->
-                    <form method="GET" action="{{ route('public.kunjungan') }}" class="flex items-center gap-2 w-full sm:w-auto">
+                    <form method="GET" action="{{ route('public.kunjungan') }}" autocomplete="off" class="flex items-center gap-2 w-full sm:w-auto">
                         @if ($activeStatus)
                             <input type="hidden" name="status" value="{{ $activeStatus }}">
                         @endif
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, kelas..." class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 w-full sm:w-60 transition shadow-xs">
+                        <input type="text" name="q" value="{{ request('q') }}" autocomplete="off" placeholder="Cari nama, kelas..." class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 w-full sm:w-60 transition shadow-xs">
                         <button type="submit" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition shrink-0 shadow-sm">
                             Cari
                         </button>

@@ -81,12 +81,25 @@ class KunjunganController extends Controller
 
         $daysList = PetugasJadwal::daysList();
         $todayDayNumber = now()->dayOfWeekIso;
-        $seninJumatSchedules = PetugasJadwal::with('petugas')
-            ->whereBetween('day_number', [1, 5])
+        $allDays = PetugasJadwal::allDaysList();
+        $todayDayName = $allDays[$todayDayNumber] ?? 'Senin';
+        $isWeekday = $todayDayNumber >= 1 && $todayDayNumber <= 5;
+
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+        $todayFormatted = $todayDayName.', '.now()->day.' '.($monthNames[now()->month] ?? '').' '.now()->year;
+
+        $todayItems = PetugasJadwal::with('petugas')
+            ->where('day_number', $todayDayNumber)
             ->where('status', 'aktif')
-            ->orderBy('day_number')
-            ->get()
-            ->groupBy('day_number');
+            ->whereHas('petugas', function ($query) {
+                $query->where('status', 'aktif');
+            })
+            ->orderBy('id')
+            ->get();
 
         return view('dashboard', [
             'todayVisits' => $todayVisits,
@@ -103,7 +116,10 @@ class KunjunganController extends Controller
             'petugasCount' => Petugas::count(),
             'daysList' => $daysList,
             'todayDayNumber' => $todayDayNumber,
-            'seninJumatSchedules' => $seninJumatSchedules,
+            'todayDayName' => $todayDayName,
+            'todayFormatted' => $todayFormatted,
+            'isWeekday' => $isWeekday,
+            'todayItems' => $todayItems,
         ]);
     }
 
@@ -146,7 +162,15 @@ class KunjunganController extends Controller
             $visitQuery = UksVisit::with(['student', 'handler'])->latest('visit_date')->latest('id');
 
             // Filter rentang waktu / tanggal / periode
-            if ($request->filled('date')) {
+            if ($request->filled('start_date') && $request->filled('end_date')) {
+                $start = min($request->query('start_date'), $request->query('end_date'));
+                $end = max($request->query('start_date'), $request->query('end_date'));
+                $visitQuery->whereBetween('visit_date', [$start, $end]);
+            } elseif ($request->filled('start_date')) {
+                $visitQuery->whereDate('visit_date', '>=', $request->query('start_date'));
+            } elseif ($request->filled('end_date')) {
+                $visitQuery->whereDate('visit_date', '<=', $request->query('end_date'));
+            } elseif ($request->filled('date')) {
                 $visitQuery->whereDate('visit_date', $request->query('date'));
             } elseif ($request->filled('month')) {
                 $parts = explode('-', (string) $request->query('month'));
@@ -263,6 +287,10 @@ class KunjunganController extends Controller
             'status' => ['required', 'in:ditangani,dirujuk,pulang'],
         ]);
 
+        if (! empty($validated['class_name']) && ! empty($validated['major'])) {
+            $validated['class_name'] = Petugas::formatClassNameWithMajor($validated['class_name'], $validated['major']);
+        }
+
         if ($request->filled('student_name')) {
             $inputName = trim((string) $request->input('student_name'));
 
@@ -275,7 +303,7 @@ class KunjunganController extends Controller
                 $student = Student::create([
                     'name' => $inputName !== '' ? $inputName : 'Siswa UKS',
                     'nis' => $request->filled('nis') ? trim((string) $request->input('nis')) : 'UKS-'.strtoupper(substr(uniqid(), -4)),
-                    'class_name' => $request->input('class_name', '-') ?: '-',
+                    'class_name' => $validated['class_name'] ?? $request->input('class_name', '-') ?: '-',
                     'major' => $request->input('major') ?: null,
                     'gender' => $request->input('gender', 'L') ?: 'L',
                 ]);
@@ -284,8 +312,8 @@ class KunjunganController extends Controller
                 if ($inputName !== '' && $student->name !== $inputName) {
                     $updates['name'] = $inputName;
                 }
-                if ($request->filled('class_name') && $student->class_name !== $request->input('class_name')) {
-                    $updates['class_name'] = $request->input('class_name');
+                if ($request->filled('class_name')) {
+                    $updates['class_name'] = $validated['class_name'] ?? $request->input('class_name');
                 }
                 if ($request->filled('major') && $student->major !== $request->input('major')) {
                     $updates['major'] = $request->input('major');
@@ -335,14 +363,75 @@ class KunjunganController extends Controller
     public function update(Request $request, UksVisit $visit): RedirectResponse
     {
         $validated = $request->validate([
-            'student_id' => ['required', 'exists:students,id'],
+            'student_id' => ['nullable', 'exists:students,id'],
+            'student_name' => ['required_without:student_id', 'nullable', 'string', 'max:255'],
+            'class_name' => ['nullable', 'string', 'max:50'],
+            'major' => ['nullable', 'string', 'max:100'],
             'visit_date' => ['required', 'date'],
             'complaint' => ['required', 'string', 'max:1000'],
             'initial_treatment' => ['nullable', 'string', 'max:1000'],
             'status' => ['required', 'in:ditangani,dirujuk,pulang'],
         ]);
 
-        $visit->update($validated);
+        if (! empty($validated['class_name']) && ! empty($validated['major'])) {
+            $validated['class_name'] = Petugas::formatClassNameWithMajor($validated['class_name'], $validated['major']);
+        }
+
+        if ($request->filled('student_name')) {
+            $inputName = trim((string) $request->input('student_name'));
+            $student = $visit->student;
+
+            // Jika nama yang dimasukkan cocok dengan siswa lain yang sudah ada di database
+            $existingOther = Student::where('name', $inputName)->where('id', '!=', $student?->id)->first();
+
+            if ($existingOther) {
+                $student = $existingOther;
+                if ($request->filled('class_name')) {
+                    $student->class_name = $validated['class_name'] ?? $request->input('class_name');
+                }
+                if ($request->filled('major')) {
+                    $student->major = $request->input('major');
+                }
+                $student->save();
+            } elseif ($student) {
+                $student->name = $inputName;
+                if ($request->filled('class_name')) {
+                    $student->class_name = $validated['class_name'] ?? $request->input('class_name');
+                }
+                if ($request->filled('major')) {
+                    $student->major = $request->input('major');
+                }
+                $student->save();
+            } else {
+                $student = Student::create([
+                    'name' => $inputName,
+                    'nis' => 'UKS-'.strtoupper(substr(uniqid(), -4)),
+                    'class_name' => $validated['class_name'] ?? $request->input('class_name', '-') ?: '-',
+                    'major' => $request->input('major') ?: null,
+                    'gender' => 'L',
+                ]);
+            }
+            $validated['student_id'] = $student->id;
+        } elseif (! empty($validated['student_id'])) {
+            $student = Student::find($validated['student_id']);
+            if ($student) {
+                if ($request->filled('class_name')) {
+                    $student->class_name = $validated['class_name'] ?? $request->input('class_name');
+                }
+                if ($request->filled('major')) {
+                    $student->major = $request->input('major');
+                }
+                $student->save();
+            }
+        }
+
+        $visit->update([
+            'student_id' => $validated['student_id'],
+            'visit_date' => $validated['visit_date'],
+            'complaint' => $validated['complaint'],
+            'initial_treatment' => $validated['initial_treatment'] ?? null,
+            'status' => $validated['status'],
+        ]);
 
         return redirect()->back()->with('success', 'Data kunjungan berhasil diperbarui.');
     }
@@ -370,7 +459,21 @@ class KunjunganController extends Controller
         $periodLabel = 'Keseluruhan Data Riwayat Kunjungan';
         $filename = 'Laporan-Kunjungan-UKS-Semua-Tanggal.xlsx';
 
-        if ($request->filled('date')) {
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $start = min($request->query('start_date'), $request->query('end_date'));
+            $end = max($request->query('start_date'), $request->query('end_date'));
+            $query->whereBetween('visit_date', [$start, $end]);
+            $periodLabel = 'Periode '.Carbon::parse($start)->translatedFormat('d F Y').' - '.Carbon::parse($end)->translatedFormat('d F Y');
+            $filename = 'Laporan-Kunjungan-UKS-'.$start.'-sd-'.$end.'.xlsx';
+        } elseif ($request->filled('start_date')) {
+            $query->whereDate('visit_date', '>=', $request->query('start_date'));
+            $periodLabel = 'Mulai Tanggal '.Carbon::parse($request->query('start_date'))->translatedFormat('d F Y');
+            $filename = 'Laporan-Kunjungan-UKS-Mulai-'.$request->query('start_date').'.xlsx';
+        } elseif ($request->filled('end_date')) {
+            $query->whereDate('visit_date', '<=', $request->query('end_date'));
+            $periodLabel = 'Sampai Tanggal '.Carbon::parse($request->query('end_date'))->translatedFormat('d F Y');
+            $filename = 'Laporan-Kunjungan-UKS-Sampai-'.$request->query('end_date').'.xlsx';
+        } elseif ($request->filled('date')) {
             $date = Carbon::parse($request->query('date'));
             $query->whereDate('visit_date', $date->toDateString());
             $periodLabel = 'Tanggal '.$date->translatedFormat('d F Y');

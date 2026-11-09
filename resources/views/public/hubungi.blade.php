@@ -4,7 +4,7 @@
 <main class="space-y-16 pb-16 min-h-screen">
     <!-- Hero Section Full Width: Menempel langsung di bawah navbar seperti Beranda -->
     <section class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-xl overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
+        <div class="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
             <div class="max-w-3xl space-y-5 text-left">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-emerald-800/80 border border-white/25 dark:border-emerald-600/40 text-white dark:text-emerald-200 text-xs font-bold shadow-sm backdrop-blur-md">
                     <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
@@ -33,7 +33,7 @@
     </section>
 
     <!-- Konten Informasi Kontak Dalam Container Rapi -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <div class="w-full px-4 sm:px-6 lg:px-8 space-y-12">
         <section class="max-w-4xl mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Kartu Kontak Darurat (WhatsApp) -->

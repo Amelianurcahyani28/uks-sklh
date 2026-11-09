@@ -29,36 +29,72 @@
         @csrf
         @method('PUT')
 
-        {{-- Pilih Siswa --}}
+        @php
+            $studentName = old('student_name', $visit->student->name ?? '');
+            $initialClass = old('class_name', $visit->student->class_name ?? '');
+            $initialMajor = old('major', $visit->student->major ?? '');
+
+            // Fallback: Jika major kosong namun class_name mengandung kode jurusan (contoh: XI PPLG 1 -> PPLG)
+            if (empty($initialMajor) && ! empty($initialClass)) {
+                foreach (['PPLG', 'BCF', 'ANIM', 'TO', 'TPFL'] as $mCode) {
+                    if (stripos($initialClass, $mCode) !== false) {
+                        $initialMajor = $mCode;
+                        break;
+                    }
+                }
+            }
+        @endphp
+
+        {{-- Nama Siswa (Ketik Manual / Rekomendasi Datalist) --}}
         <div>
-            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Pilih Siswa <span class="text-rose-500">*</span></label>
-            <select name="student_id" id="student_select" required
-                class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 dark:text-slate-100 text-sm focus:border-teal-600 focus:ring-teal-600 transition px-3 py-2.5">
+            <div class="flex items-center justify-between mb-1.5">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    Nama Lengkap Siswa <span class="text-rose-500">*</span>
+                </label>
+                <span class="text-[11px] text-teal-600 dark:text-teal-400 font-medium">Ketik manual / pilih rekomendasi</span>
+            </div>
+            <input type="text" name="student_name" id="student_name_input"
+                value="{{ $studentName }}"
+                list="students_datalist"
+                required
+                autocomplete="off"
+                placeholder="Ketik nama lengkap siswa..."
+                class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 dark:text-slate-100 text-sm focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition px-3 py-2.5">
+            <datalist id="students_datalist">
                 @foreach ($students as $student)
-                    <option value="{{ $student->id }}"
-                        data-kelas="{{ $student->class_name }}"
-                        data-major="{{ $student->major ?? '-' }}"
-                        @selected(old('student_id', $visit->student_id) == $student->id)>
-                        {{ $student->name }}
+                    <option value="{{ $student->name }}">
+                        Kelas {{ $student->class_name }}{{ $student->major ? ' (' . $student->major . ')' : '' }}
                     </option>
                 @endforeach
+            </datalist>
+            <input type="hidden" name="student_id" id="student_id_hidden" value="{{ old('student_id', $visit->student_id) }}">
+        </div>
+
+        {{-- Jurusan (Khusus Siswa / PMR) - Posisi di Atas Kelas --}}
+        <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Jurusan (Khusus SMK)
+            </label>
+            <select name="major" id="kunjungan_major"
+                class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 dark:text-slate-100 text-sm focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition px-3 py-2.5 cursor-pointer">
+                <option value="">-- Bukan Siswa / Umum / Guru --</option>
+                <option value="PPLG" @selected($initialMajor === 'PPLG')>PPLG (Pengembangan Perangkat Lunak dan Gim)</option>
+                <option value="BCF" @selected($initialMajor === 'BCF')>BCF (Broadcasting dan Perfilman)</option>
+                <option value="ANIM" @selected($initialMajor === 'ANIM')>ANIM (Animasi)</option>
+                <option value="TO" @selected($initialMajor === 'TO')>TO (Teknik Otomotif)</option>
+                <option value="TPFL" @selected($initialMajor === 'TPFL')>TPFL (Teknik Pengelasan dan Fabrikasi Logam)</option>
             </select>
         </div>
 
-        {{-- Kelas (readonly) --}}
+        {{-- Kelas (Khusus Siswa / PMR) - Dropdown Pilihan Mengikuti Jurusan --}}
         <div>
-            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Kelas</label>
-            <input type="text" id="kelas_display" readonly
-                value="{{ old('student_id') ? '' : ($visit->student->class_name ?? '-') }}"
-                class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 dark:text-slate-400 text-sm text-slate-500 cursor-not-allowed py-2.5 px-3">
-        </div>
-
-        {{-- Jurusan (readonly) --}}
-        <div>
-            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Jurusan</label>
-            <input type="text" id="major_display" readonly
-                value="{{ old('student_id') ? '' : ($visit->student->major ?? '-') }}"
-                class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/80 dark:text-slate-400 text-sm text-slate-500 cursor-not-allowed py-2.5 px-3">
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Kelas (Khusus Siswa / PMR) <span class="text-rose-500">*</span>
+            </label>
+            <select name="class_name" id="kunjungan_class" required
+                class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 dark:text-slate-100 text-sm focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition px-3 py-2.5 cursor-pointer">
+                <!-- Opsi kelas akan terisi otomatis sesuai jurusan yang dipilih -->
+            </select>
         </div>
 
         {{-- Tanggal --}}
@@ -131,12 +167,136 @@
 </div>
 
 <script>
-document.getElementById('student_select').addEventListener('change', function () {
-    const selected = this.options[this.selectedIndex];
-    const kelasInput = document.getElementById('kelas_display');
-    const majorInput = document.getElementById('major_display');
-    if (kelasInput) kelasInput.value = selected.dataset.kelas || '-';
-    if (majorInput) majorInput.value = selected.dataset.major || '-';
-});
+    document.addEventListener('DOMContentLoaded', function () {
+        const studentNameInput = document.getElementById('student_name_input');
+        const majorSelect = document.getElementById('kunjungan_major');
+        const classSelect = document.getElementById('kunjungan_class');
+        const studentIdHidden = document.getElementById('student_id_hidden');
+        const initialSelectedClass = @json($initialClass);
+        const studentsData = @json($students ?? []);
+
+        const majorClasses = {
+            'PPLG': ['PPLG 1', 'PPLG 2', 'PPLG 3', 'PPLG 4'],
+            'BCF': ['BCF 1', 'BCF 2', 'BCF 3', 'BCF 4'],
+            'ANIM': ['ANIM 1', 'ANIM 2', 'ANIM 3', 'ANIM 4'],
+            'TO': ['TO 1', 'TO 2', 'TO 3', 'TO 4'],
+            'TPFL': ['TPFL 1', 'TPFL 2', 'TPFL 3', 'TPFL 4'],
+        };
+
+        function cleanString(str) {
+            return (str || '').replace(/[\s\-_]/g, '').toUpperCase();
+        }
+
+        function populateClassOptions(major, selectedVal) {
+            if (!classSelect) return;
+            classSelect.innerHTML = '';
+
+            if (!major || !majorClasses[major]) {
+                const optNone = document.createElement('option');
+                optNone.value = '';
+                optNone.textContent = '-- Pilih Kelas / Umum --';
+                classSelect.appendChild(optNone);
+
+                const optStrip = document.createElement('option');
+                optStrip.value = '-';
+                optStrip.textContent = '- (Bukan Siswa / Guru / Staf)';
+                classSelect.appendChild(optStrip);
+
+                const umumLevels = ['X', 'XI', 'XII'];
+                umumLevels.forEach(lvl => {
+                    const group = document.createElement('optgroup');
+                    group.label = `Kelas ${lvl}`;
+                    [1, 2, 3, 4].forEach(num => {
+                        const opt = document.createElement('option');
+                        opt.value = `${lvl} ${num}`;
+                        opt.textContent = `${lvl} ${num}`;
+                        if (cleanString(selectedVal) === cleanString(`${lvl} ${num}`)) {
+                            opt.selected = true;
+                        }
+                        group.appendChild(opt);
+                    });
+                    classSelect.appendChild(group);
+                });
+
+                if (selectedVal && selectedVal !== '-' && selectedVal !== '') {
+                    const targetClean = cleanString(selectedVal);
+                    let foundExisting = Array.from(classSelect.options).some(o => cleanString(o.value) === targetClean);
+                    if (!foundExisting) {
+                        const optCustom = document.createElement('option');
+                        optCustom.value = selectedVal;
+                        optCustom.textContent = selectedVal;
+                        optCustom.selected = true;
+                        classSelect.appendChild(optCustom);
+                    }
+                } else if (selectedVal === '-') {
+                    optStrip.selected = true;
+                }
+                return;
+            }
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = `-- Pilih Kelas ${major} --`;
+            classSelect.appendChild(placeholder);
+
+            const levels = ['X', 'XI', 'XII'];
+            const targetClean = cleanString(selectedVal);
+            let matched = false;
+
+            levels.forEach(lvl => {
+                const optGroup = document.createElement('optgroup');
+                optGroup.label = `Kelas ${lvl}`;
+
+                majorClasses[major].forEach(rombel => {
+                    const fullClassName = `${lvl} ${rombel}`;
+                    const opt = document.createElement('option');
+                    opt.value = fullClassName;
+                    opt.textContent = fullClassName;
+
+                    if (targetClean && (cleanString(fullClassName) === targetClean || targetClean === cleanString(`${lvl}${rombel}`))) {
+                        opt.selected = true;
+                        matched = true;
+                    }
+
+                    optGroup.appendChild(opt);
+                });
+
+                classSelect.appendChild(optGroup);
+            });
+
+            if (selectedVal && !matched && selectedVal !== '-') {
+                const optCustom = document.createElement('option');
+                optCustom.value = selectedVal;
+                optCustom.textContent = `${selectedVal} (Tersimpan)`;
+                optCustom.selected = true;
+                classSelect.appendChild(optCustom);
+            }
+        }
+
+        // Ketika nama siswa diketik atau dipilih dari datalist
+        if (studentNameInput) {
+            studentNameInput.addEventListener('input', function() {
+                const val = this.value.trim().toLowerCase();
+                const found = studentsData.find(s => s.name.toLowerCase() === val);
+                if (found) {
+                    if (studentIdHidden) studentIdHidden.value = found.id;
+                    if (majorSelect && found.major) {
+                        majorSelect.value = found.major;
+                    }
+                    populateClassOptions(majorSelect ? majorSelect.value : '', found.class_name || '');
+                } else {
+                    if (studentIdHidden) studentIdHidden.value = '';
+                }
+            });
+        }
+
+        if (majorSelect && classSelect) {
+            populateClassOptions(majorSelect.value, initialSelectedClass);
+
+            majorSelect.addEventListener('change', function () {
+                populateClassOptions(this.value, '');
+            });
+        }
+    });
 </script>
 @endsection

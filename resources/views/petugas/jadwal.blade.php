@@ -21,6 +21,12 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ route('public.petugas') }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white/20 hover:bg-white/30 text-white font-extrabold text-xs rounded-xl border border-white/30 shadow-md transition backdrop-blur-md">
+                <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                <span>Lihat Tampilan Publik</span>
+            </a>
             <button onclick="document.getElementById('modalTambahJadwal').classList.remove('hidden')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs shadow-lg transition transform hover:-translate-y-0.5 cursor-pointer">
                 <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
@@ -32,16 +38,7 @@
 </div>
 
 <div class="p-4 sm:p-8 space-y-6 flex-1">
-    <!-- Pesan Flash Sukses / Error -->
-    @if (session('success'))
-        <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center justify-between shadow-xs">
-            <div class="flex items-center gap-2">
-                <span class="text-base">✓</span>
-                <span>{{ session('success') }}</span>
-            </div>
-            <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700 font-black cursor-pointer">✕</button>
-        </div>
-    @endif
+
 
     @if ($errors->any())
         <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs font-bold space-y-1">
@@ -90,90 +87,123 @@
         </div>
     </div>
 
-    <!-- Visual Roster Mingguan: 5 Hari Sekolah (Senin – Jumat) -->
+    <!-- Agenda Piket Harian (Khusus Hari Ini) -->
     <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xs space-y-4">
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-teal-50 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 mb-1">
-                    Agenda Piket Mingguan
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Agenda Piket Hari Ini
                 </span>
-                <h3 class="text-base font-extrabold text-slate-900 dark:text-white">
-                    Jadwal Piket Petugas UKS (Senin – Jumat)
+                <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>Jadwal Piket Petugas UKS — Hari {{ $todayDayName }}</span>
+                    @if($isWeekday)
+                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                            {{ $todayItems->count() }} Petugas
+                        </span>
+                    @endif
                 </h3>
             </div>
-            <span class="text-xs text-slate-400 font-medium hidden sm:inline">
-                Hari aktif sekolah: Senin s/d Jumat
-            </span>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    📅 {{ $todayFormatted }}
+                </span>
+                @if($isWeekday)
+                    <button 
+                        type="button" 
+                        onclick="document.getElementById('modalTambahJadwal').classList.remove('hidden'); document.querySelector('[name=day_number]').value = {{ $todayDayNumber }};"
+                        class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1 shadow-xs cursor-pointer">
+                        <span>Tambah Piket Hari Ini</span>
+                    </button>
+                @endif
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-            @foreach($daysList as $num => $dayName)
-                @php
-                    $dayItems = $weeklyCards[$num]['items'] ?? collect();
-                    $isToday = $num === $todayDayNumber;
-                @endphp
-                <div class="rounded-2xl border {{ $isToday ? 'border-emerald-500 bg-emerald-50/40 dark:bg-emerald-950/30 ring-2 ring-emerald-500/20' : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50' }} p-4 flex flex-col justify-between transition hover:shadow-sm">
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between pb-2 border-b {{ $isToday ? 'border-emerald-200 dark:border-emerald-800/80' : 'border-slate-200/80 dark:border-slate-800' }}">
-                            <span class="text-xs font-black {{ $isToday ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-200' }}">
-                                Hari {{ $dayName }}
-                            </span>
-                            @if($isToday)
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-600 text-white shadow-xs">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
-                                    <span>Hari Ini</span>
-                                </span>
-                            @endif
-                        </div>
-
-                        <div class="space-y-2.5">
-                            @forelse($dayItems as $item)
-                                @php $p = $item->petugas; @endphp
-                                @if($p)
-                                    <div class="space-y-1.5 pt-1">
-                                        <div class="flex items-center gap-2.5">
-                                            <div class="w-8 h-8 rounded-xl bg-gradient-to-br {{ $p->gender === 'L' ? 'from-teal-500 to-emerald-600' : 'from-rose-400 to-teal-600' }} text-white font-extrabold text-[11px] flex items-center justify-center shrink-0 shadow-xs">
-                                                {{ strtoupper(mb_substr($p->name, 0, 2)) }}
-                                            </div>
-                                            <div class="min-w-0">
-                                                <p class="text-xs font-extrabold text-slate-900 dark:text-white truncate" title="{{ $p->name }}">
-                                                    {{ $p->name }}
-                                                </p>
-                                                <p class="text-[10px] text-teal-600 dark:text-teal-400 font-semibold truncate">
-                                                    {{ $p->role_title }}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div class="text-[10px] space-y-0.5 text-slate-500 dark:text-slate-400 pl-1 border-l-2 border-emerald-400 dark:border-emerald-600">
-                                            <p class="font-bold text-slate-700 dark:text-slate-300">🕒 {{ $item->shift_time }}</p>
-                                            <p class="truncate">{{ $item->room ?? 'Ruang UKS Utama' }}</p>
-                                        </div>
-
-                                        <button 
-                                            type="button"
-                                            onclick="openEditModal({{ $item->id }}, {{ $item->day_number }}, {{ $item->petugas_id }}, '{{ addslashes($item->shift_time) }}', '{{ addslashes($item->room) }}', '{{ addslashes($item->notes ?? '') }}', '{{ $item->status }}')"
-                                            class="w-full mt-1 py-1 px-2 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[10px] font-bold text-slate-700 dark:text-slate-300 transition text-center cursor-pointer">
-                                            Ubah Petugas
-                                        </button>
+        @if($isWeekday)
+            @if($todayItems->isNotEmpty())
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-{{ min(count($todayItems), 4) }} gap-3.5">
+                    @foreach($todayItems as $item)
+                        @php $p = $item->petugas; @endphp
+                        @if($p)
+                            <div class="rounded-2xl border border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20 ring-1 ring-emerald-500/20 p-4 flex flex-col justify-between transition hover:shadow-sm space-y-3">
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between pb-2 border-b border-emerald-200/80 dark:border-emerald-800/80">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-600 text-white shadow-xs">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+                                            <span>Sedang Bertugas</span>
+                                        </span>
+                                        <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                                            {{ $item->room ?? 'Ruang UKS' }}
+                                        </span>
                                     </div>
-                                @endif
-                            @empty
-                                <div class="py-4 text-center space-y-1">
-                                    <p class="text-[11px] text-slate-400 italic">Belum ada petugas</p>
-                                    <button 
-                                        type="button" 
-                                        onclick="document.getElementById('modalTambahJadwal').classList.remove('hidden'); document.querySelector('[name=day_number]').value = {{ $num }};"
-                                        class="text-[10px] font-bold text-teal-600 dark:text-teal-400 hover:underline cursor-pointer">
-                                        + Jadwalkan
-                                    </button>
+
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-teal-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                                            {{ strtoupper(mb_substr($p->name, 0, 2)) }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-extrabold text-slate-900 dark:text-white truncate" title="{{ $p->name }}">
+                                                {{ $p->name }}
+                                            </p>
+                                            <p class="text-[10px] text-teal-600 dark:text-teal-400 font-semibold truncate">
+                                                {{ $p->role_title }}
+                                                @if($p->class_name)
+                                                    • {{ $p->formatted_class_name ?: $p->class_name }}
+                                                @endif
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-[11px] space-y-1 text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900/90 p-2.5 rounded-xl border border-slate-200/70 dark:border-slate-800">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-emerald-600 dark:text-emerald-400 font-bold">🕒 Jam Piket:</span>
+                                            <span class="font-bold text-slate-900 dark:text-slate-200">{{ $item->shift_time }}</span>
+                                        </div>
+                                        @if($item->notes)
+                                            <p class="text-[10px] text-slate-500 dark:text-slate-400 italic">
+                                                "{{ $item->notes }}"
+                                            </p>
+                                        @endif
+                                    </div>
                                 </div>
-                            @endforelse
-                        </div>
-                    </div>
+
+                                <button 
+                                    type="button"
+                                    onclick="openEditModal({{ $item->id }}, {{ $item->day_number }}, {{ $item->petugas_id }}, '{{ addslashes($item->shift_time) }}', '{{ addslashes($item->room) }}', '{{ addslashes($item->notes ?? '') }}', '{{ $item->status }}')"
+                                    class="w-full mt-1 py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-300 transition text-center cursor-pointer">
+                                    Ubah Petugas
+                                </button>
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
-            @endforeach
-        </div>
+            @else
+                <div class="py-6 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">
+                        Belum ada petugas yang dijadwalkan piket pada hari {{ $todayDayName }}.
+                    </p>
+                    <button 
+                        type="button" 
+                        onclick="document.getElementById('modalTambahJadwal').classList.remove('hidden'); document.querySelector('[name=day_number]').value = {{ $todayDayNumber }};"
+                        class="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline cursor-pointer">
+                        + Jadwalkan Petugas Hari {{ $todayDayName }}
+                    </button>
+                </div>
+            @endif
+        @else
+            <!-- Akhir Pekan (Sabtu / Minggu) -->
+            <div class="py-6 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-1">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 mb-1">
+                    Libur Akhir Pekan
+                </span>
+                <p class="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Hari ini libur akhir pekan (Hari {{ $todayDayName }}). Tidak ada jadwal piket reguler.
+                </p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                    Pelayanan reguler piket UKS aktif kembali pada hari Senin s/d Jumat (06:30 – 15:00 WIB).
+                </p>
+            </div>
+        @endif
     </div>
 
     <!-- Filter Hari Piket -->
@@ -202,21 +232,30 @@
                     Klik tombol "Ubah Petugas" pada baris tabel untuk mengganti petugas atau menyesuaikan jam piket.
                 </p>
             </div>
-            <button onclick="document.getElementById('modalTambahJadwal').classList.remove('hidden')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
-                <span>+ Tambah Piket</span>
-            </button>
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('public.petugas') }}" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 dark:border-slate-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    <span>Lihat Tampilan Publik</span>
+                </a>
+                <button onclick="document.getElementById('modalTambahJadwal').classList.remove('hidden')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                    <span>Tambah Piket</span>
+                </button>
+            </div>
         </div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
                 <thead>
                     <tr class="bg-slate-50 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700">
-                        <th class="py-3.5 px-4 font-bold text-center w-14">Hari</th>
+                        <th class="py-3.5 px-3 font-bold text-center w-14 whitespace-nowrap">No</th>
+                        <th class="py-3.5 px-4 font-bold text-center w-16">Hari</th>
                         <th class="py-3.5 px-4 font-bold">Petugas Yang Bertugas</th>
                         <th class="py-3.5 px-4 font-bold">Peran / Jabatan</th>
                         <th class="py-3.5 px-4 font-bold">Jam Piket</th>
                         <th class="py-3.5 px-4 font-bold">Ruangan</th>
-                        <th class="py-3.5 px-4 font-bold">Catatan Tugas</th>
+                        <th class="py-3.5 px-4 font-bold">Kelas</th>
                         <th class="py-3.5 px-4 font-bold text-center">Status</th>
                         <th class="py-3.5 px-4 font-bold text-center w-36">Aksi Admin</th>
                     </tr>
@@ -228,6 +267,11 @@
                             $isToday = $item->day_number === $todayDayNumber;
                         @endphp
                         <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition {{ $isToday ? 'bg-emerald-50/30 dark:bg-emerald-950/20' : '' }}">
+                            <td class="py-3.5 px-3 text-center whitespace-nowrap">
+                                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs border border-slate-200 dark:border-slate-700">
+                                    {{ $loop->iteration }}
+                                </span>
+                            </td>
                             <td class="py-3.5 px-4 text-center">
                                 <span class="inline-block px-2.5 py-1 rounded-lg font-extrabold text-[11px] {{ $isToday ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300' }}">
                                     {{ $item->day }}
@@ -240,7 +284,7 @@
                             <td class="py-3.5 px-4">
                                 @if($petugas)
                                     <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br {{ $petugas->gender === 'L' ? 'from-teal-500 to-emerald-600' : 'from-rose-400 to-teal-600' }} text-white font-black text-xs flex items-center justify-center shadow-xs shrink-0">
+                                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-400 to-teal-600 text-white font-black text-xs flex items-center justify-center shadow-xs shrink-0">
                                             {{ strtoupper(mb_substr($petugas->name, 0, 2)) }}
                                         </div>
                                         <div>
@@ -255,7 +299,7 @@
 
                             <td class="py-3.5 px-4">
                                 <span class="font-semibold text-teal-700 dark:text-teal-400">
-                                    {{ $petugas?->role_title ?? '-' }}
+                                    {{ $item->notes ?: ($petugas?->role_title ?: '-') }}
                                 </span>
                             </td>
 
@@ -266,11 +310,17 @@
                             </td>
 
                             <td class="py-3.5 px-4 text-slate-600 dark:text-slate-300 font-medium">
-                                {{ $item->room ?? 'Ruang UKS Utama' }}
+                                {{ $item->room ?? 'Ruang UKS' }}
                             </td>
 
-                            <td class="py-3.5 px-4 text-slate-500 dark:text-slate-400 text-[11px]">
-                                {{ $item->notes ?? '-' }}
+                            <td class="py-3.5 px-4 text-slate-700 dark:text-slate-300 font-semibold text-xs whitespace-nowrap">
+                                @if($petugas?->class_name)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
+                                        {{ $petugas->formatted_class_name ?: $petugas->class_name }}
+                                    </span>
+                                @else
+                                    <span class="text-slate-400 italic text-xs">-</span>
+                                @endif
                             </td>
 
                             <td class="py-3.5 px-4 text-center">
@@ -288,7 +338,7 @@
                                 <div class="flex items-center justify-center gap-1.5">
                                     <button 
                                         type="button"
-                                        onclick="openEditModal({{ $item->id }}, {{ $item->day_number }}, {{ $item->petugas_id }}, '{{ addslashes($item->shift_time) }}', '{{ addslashes($item->room) }}', '{{ addslashes($item->notes ?? '') }}', '{{ $item->status }}')"
+                                        onclick="openEditModal({{ $item->id }}, {{ $item->day_number }}, {{ $item->petugas_id }}, '{{ addslashes($item->shift_time) }}', '{{ addslashes($item->room) }}', '{{ addslashes($item->notes ?: ($petugas?->role_title ?: '')) }}', '{{ $item->status }}')"
                                         class="px-2.5 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 dark:hover:bg-teal-900/60 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800 font-bold transition text-xs flex items-center gap-1 cursor-pointer" 
                                         title="Ubah Petugas & Jadwal">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -311,9 +361,9 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="py-12 text-center text-slate-500 dark:text-slate-400">
+                            <td colspan="9" class="py-12 text-center text-slate-500 dark:text-slate-400">
                                 <p class="text-sm font-bold">Belum ada jadwal piket yang terdaftar.</p>
-                                <p class="text-xs text-slate-400 mt-1">Klik tombol "+ Tambah Jadwal Piket" untuk menambahkan jadwal tugas.</p>
+                                <p class="text-xs text-slate-400 mt-1">Klik tombol "Tambah Jadwal Piket" untuk menambahkan jadwal tugas.</p>
                             </td>
                         </tr>
                     @endforelse
@@ -334,7 +384,7 @@
             <button type="button" onclick="document.getElementById('modalTambahJadwal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">✕</button>
         </div>
 
-        <form method="POST" action="{{ route('petugas.jadwal.store') }}" class="p-6 space-y-4">
+        <form method="POST" action="{{ route('petugas.jadwal.store') }}" autocomplete="off" class="p-6 space-y-4">
             @csrf
 
             <!-- Pilih Hari -->
@@ -356,10 +406,10 @@
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                     Pilih Petugas UKS <span class="text-rose-500">*</span>
                 </label>
-                <select name="petugas_id" required class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
+                <select id="tambah_petugas_id" name="petugas_id" required class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
                     <option value="">-- Pilih Petugas UKS --</option>
                     @foreach($allPetugas as $p)
-                        <option value="{{ $p->id }}">
+                        <option value="{{ $p->id }}" data-role="{{ $p->role_title }}">
                             {{ $p->name }} — {{ $p->role_title }}
                         </option>
                     @endforeach
@@ -372,22 +422,22 @@
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                         Jam Shift / Piket <span class="text-rose-500">*</span>
                     </label>
-                    <input type="text" name="shift_time" value="07:30 - 15:30 WIB" required placeholder="Contoh: 07:30 - 15:30 WIB" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
+                    <input type="text" name="shift_time" value="06:30 - 15:00 WIB" required placeholder="Contoh: 06:30 - 15:00 WIB" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                         Ruangan / Lokasi
                     </label>
-                    <input type="text" name="room" value="Ruang UKS Utama" placeholder="Contoh: Ruang UKS Utama" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
+                    <input type="text" name="room" value="Ruang UKS" placeholder="Contoh: Ruang UKS" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
                 </div>
             </div>
 
-            <!-- Catatan Tugas -->
+            <!-- Peran / Jabatan -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                    Catatan / Fokus Tugas
+                    Peran / Jabatan
                 </label>
-                <input type="text" name="notes" placeholder="Contoh: Siaga Pemeriksaan Medis, P3K, atau Perawatan Siswa Sakit" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
+                <input type="text" id="tambah_notes" name="notes" placeholder="Contoh: Pembina UKS, Petugas P3K, Tenaga Medis, Relawan PMR" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
             </div>
 
             <!-- Status -->
@@ -424,7 +474,7 @@
             <button type="button" onclick="document.getElementById('modalEditJadwal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 font-bold text-lg cursor-pointer">✕</button>
         </div>
 
-        <form id="formEditJadwal" method="POST" action="" class="p-6 space-y-4">
+        <form id="formEditJadwal" method="POST" action="" autocomplete="off" class="p-6 space-y-4">
             @csrf
             @method('PUT')
 
@@ -447,7 +497,7 @@
                 </label>
                 <select id="edit_petugas_id" name="petugas_id" required class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
                     @foreach($allPetugas as $p)
-                        <option value="{{ $p->id }}">
+                        <option value="{{ $p->id }}" data-role="{{ $p->role_title }}">
                             {{ $p->name }} — {{ $p->role_title }}
                         </option>
                     @endforeach
@@ -470,12 +520,12 @@
                 </div>
             </div>
 
-            <!-- Catatan Tugas -->
+            <!-- Peran / Jabatan -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                    Catatan / Fokus Tugas
+                    Peran / Jabatan
                 </label>
-                <input type="text" id="edit_notes" name="notes" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
+                <input type="text" id="edit_notes" name="notes" placeholder="Contoh: Pembina UKS, Petugas P3K, Tenaga Medis, Relawan PMR" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs p-3 focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 transition">
             </div>
 
             <!-- Status -->
@@ -508,10 +558,33 @@
         document.getElementById('edit_day_number').value = dayNumber;
         document.getElementById('edit_petugas_id').value = petugasId;
         document.getElementById('edit_shift_time').value = shiftTime;
-        document.getElementById('edit_room').value = room || 'Ruang UKS Utama';
+        document.getElementById('edit_room').value = room || 'Ruang UKS';
         document.getElementById('edit_notes').value = notes || '';
         document.getElementById('edit_status').value = status || 'aktif';
         document.getElementById('modalEditJadwal').classList.remove('hidden');
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const editPetugasSelect = document.getElementById('edit_petugas_id');
+        if (editPetugasSelect) {
+            editPetugasSelect.addEventListener('change', function() {
+                const selected = this.options[this.selectedIndex];
+                if (selected && selected.dataset.role) {
+                    document.getElementById('edit_notes').value = selected.dataset.role;
+                }
+            });
+        }
+
+        const tambahPetugasSelect = document.getElementById('tambah_petugas_id');
+        if (tambahPetugasSelect) {
+            tambahPetugasSelect.addEventListener('change', function() {
+                const selected = this.options[this.selectedIndex];
+                const notesInput = document.getElementById('tambah_notes');
+                if (selected && selected.dataset.role && notesInput) {
+                    notesInput.value = selected.dataset.role;
+                }
+            });
+        }
+    });
 </script>
 @endsection

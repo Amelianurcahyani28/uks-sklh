@@ -30,20 +30,41 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('petugas.update', $petugas) }}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 shadow-xs space-y-5">
+        <form method="POST" action="{{ route('petugas.update', $petugas) }}" autocomplete="off" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 shadow-xs space-y-5">
             @csrf
             @method('PUT')
 
             <!-- Nama Petugas -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Nama Lengkap Petugas <span class="text-rose-500">*</span></label>
-                <input type="text" name="name" value="{{ old('name', $petugas->name) }}" required placeholder="Contoh: Ns. Siti Rahmawati, S.Kep / Dra. Nurjanah" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition p-3">
+                <input type="text" name="name" value="{{ old('name', $petugas->name) }}" autocomplete="off" required placeholder="Contoh: Ns. Siti Rahmawati, S.Kep / Dra. Nurjanah" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition p-3">
             </div>
 
             <!-- Jabatan / Peran -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Jabatan / Peran di UKS <span class="text-rose-500">*</span></label>
-                <input type="text" name="role_title" value="{{ old('role_title', $petugas->role_title) }}" required placeholder="Contoh: Pembina UKS, Tenaga Medis UKS, Petugas P3K, Ketua PMR" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition p-3">
+                <input type="text" name="role_title" value="{{ old('role_title', $petugas->role_title) }}" autocomplete="off" required placeholder="Contoh: Pembina UKS, Tenaga Medis UKS, Petugas P3K, Ketua PMR" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition p-3">
+            </div>
+
+            <!-- Jurusan (Khusus Siswa / PMR) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Jurusan (Khusus Siswa / PMR)</label>
+                <select name="major" id="petugas_edit_major" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition p-3 cursor-pointer">
+                    <option value="">-- Bukan Siswa / Umum / Guru --</option>
+                    <option value="PPLG" @selected(old('major', $petugas->major) === 'PPLG')>PPLG (Pengembangan Perangkat Lunak dan Gim)</option>
+                    <option value="BCF" @selected(old('major', $petugas->major) === 'BCF')>BCF (Broadcasting dan Perfilman)</option>
+                    <option value="ANIM" @selected(old('major', $petugas->major) === 'ANIM')>ANIM (Animasi)</option>
+                    <option value="TO" @selected(old('major', $petugas->major) === 'TO')>TO (Teknik Otomotif)</option>
+                    <option value="TPFL" @selected(old('major', $petugas->major) === 'TPFL')>TPFL (Teknik Pengelasan dan Fabrikasi Logam)</option>
+                </select>
+            </div>
+
+            <!-- Kelas (Khusus Siswa / PMR) -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Kelas (Khusus Siswa / PMR)</label>
+                <select name="class_name" id="petugas_edit_class" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition p-3 cursor-pointer">
+                    <!-- Opsi kelas otomatis sesuai jurusan -->
+                </select>
             </div>
 
             <!-- Jenis Kelamin & Status -->
@@ -67,7 +88,7 @@
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Status Petugas <span class="text-rose-500">*</span></label>
                     <select name="status" required class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition p-3">
                         <option value="aktif" @selected(old('status', $petugas->status) === 'aktif')>Aktif (Siaga Jaga)</option>
-                        <option value="nonaktif" @selected(old('status', $petugas->status) === 'nonaktif')>Non-Aktif / Cuti</option>
+                        <option value="nonaktif" @selected(old('status', $petugas->status) === 'nonaktif')>Non-Aktif</option>
                     </select>
                 </div>
             </div>
@@ -75,7 +96,7 @@
             <!-- No WhatsApp -->
             <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">No. WhatsApp / HP</label>
-                <input type="text" name="phone" value="{{ old('phone', $petugas->phone) }}" placeholder="Contoh: 081234567890" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition p-3">
+                <input type="text" name="phone" value="{{ old('phone', $petugas->phone) }}" autocomplete="off" placeholder="Contoh: 081234567890" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:bg-white dark:focus:bg-slate-800 focus:ring-teal-600 transition p-3">
             </div>
 
             <!-- Penugasan Jadwal Piket Otomatis (Senin - Jumat) -->
@@ -107,14 +128,14 @@
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                             Jam Piket
                         </label>
-                        <input type="text" name="shift_time" value="{{ old('shift_time', $primaryJadwal?->shift_time ?? '07:30 - 15:30 WIB') }}" placeholder="Contoh: 07:30 - 15:30 WIB" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:ring-teal-600 transition p-3">
+                        <input type="text" name="shift_time" value="{{ old('shift_time', $primaryJadwal?->shift_time ?? '06:30 - 15:00 WIB') }}" placeholder="Contoh: 06:30 - 15:00 WIB" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:ring-teal-600 transition p-3">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                             Ruangan Piket
                         </label>
-                        <input type="text" name="room" value="{{ old('room', $primaryJadwal?->room ?? 'Ruang UKS Utama') }}" placeholder="Contoh: Ruang UKS Utama" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:ring-teal-600 transition p-3">
+                        <input type="text" name="room" value="{{ old('room', $primaryJadwal?->room ?? 'Ruang UKS') }}" placeholder="Contoh: Ruang UKS" class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 dark:text-white text-xs focus:border-teal-600 focus:ring-teal-600 transition p-3">
                     </div>
                 </div>
             </div>
@@ -140,4 +161,133 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const majorSelect = document.getElementById('petugas_edit_major');
+        const classSelect = document.getElementById('petugas_edit_class');
+
+        const majorClasses = {
+            'PPLG': ['PPLG 1', 'PPLG 2', 'PPLG 3', 'PPLG 4'],
+            'BCF': ['BCF 1', 'BCF 2', 'BCF 3', 'BCF 4'],
+            'ANIM': ['ANIM 1', 'ANIM 2', 'ANIM 3', 'ANIM 4'],
+            'TO': ['TO 1', 'TO 2', 'TO 3', 'TO 4'],
+            'TPFL': ['TPFL 1', 'TPFL 2', 'TPFL 3', 'TPFL 4'],
+        };
+
+        function cleanClassString(str) {
+            return (str || '').replace(/^kelas\s*/i, '').replace(/[\s\-_]/g, '').toUpperCase();
+        }
+
+        function populateEditClassOptions(major, selectedVal) {
+            if (!classSelect) return;
+            classSelect.innerHTML = '';
+
+            const targetClean = cleanClassString(selectedVal);
+            let matched = false;
+
+            if (!major || !majorClasses[major]) {
+                const optNone = document.createElement('option');
+                optNone.value = '';
+                optNone.textContent = '-- Bukan Siswa / Tanpa Kelas --';
+                if (!selectedVal || selectedVal === '') {
+                    optNone.selected = true;
+                    matched = true;
+                }
+                classSelect.appendChild(optNone);
+
+                const optStrip = document.createElement('option');
+                optStrip.value = '-';
+                optStrip.textContent = '- (Bukan Siswa / Guru / Staf)';
+                if (selectedVal === '-') {
+                    optStrip.selected = true;
+                    matched = true;
+                }
+                classSelect.appendChild(optStrip);
+
+                const umumLevels = ['X', 'XI', 'XII'];
+                umumLevels.forEach(lvl => {
+                    const group = document.createElement('optgroup');
+                    group.label = `Kelas ${lvl}`;
+                    [1, 2, 3, 4].forEach(num => {
+                        const fullClass = `${lvl} ${num}`;
+                        const opt = document.createElement('option');
+                        opt.value = fullClass;
+                        opt.textContent = fullClass;
+                        if (!matched && (targetClean === cleanClassString(fullClass))) {
+                            opt.selected = true;
+                            matched = true;
+                        }
+                        group.appendChild(opt);
+                    });
+                    classSelect.appendChild(group);
+                });
+
+                if (selectedVal && !matched && selectedVal !== '-' && selectedVal !== '') {
+                    const optCustom = document.createElement('option');
+                    optCustom.value = selectedVal;
+                    optCustom.textContent = selectedVal;
+                    optCustom.selected = true;
+                    classSelect.appendChild(optCustom);
+                }
+                return;
+            }
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = `-- Pilih Kelas ${major} --`;
+            classSelect.appendChild(placeholder);
+
+            const optNonSiswa = document.createElement('option');
+            optNonSiswa.value = '';
+            optNonSiswa.textContent = '-- Bukan Siswa / Tanpa Kelas --';
+            if (!selectedVal || selectedVal === '') {
+                optNonSiswa.selected = true;
+                matched = true;
+            }
+            classSelect.appendChild(optNonSiswa);
+
+            const levels = ['X', 'XI', 'XII'];
+            levels.forEach(lvl => {
+                const optGroup = document.createElement('optgroup');
+                optGroup.label = `Kelas ${lvl}`;
+
+                majorClasses[major].forEach(rombel => {
+                    const fullClassName = `${lvl} ${rombel}`;
+                    const opt = document.createElement('option');
+                    opt.value = fullClassName;
+                    opt.textContent = fullClassName;
+
+                    if (!matched && selectedVal) {
+                        const optClean = cleanClassString(fullClassName);
+                        const majorClean = cleanClassString(major);
+                        if (targetClean === optClean || targetClean === cleanClassString(`${lvl} ${rombel.replace(major, '').trim()}`) || targetClean.replace(majorClean, '') === optClean.replace(majorClean, '')) {
+                            opt.selected = true;
+                            matched = true;
+                        }
+                    }
+                    optGroup.appendChild(opt);
+                });
+                classSelect.appendChild(optGroup);
+            });
+
+            if (selectedVal && !matched && selectedVal !== '-' && selectedVal !== '') {
+                const optCustom = document.createElement('option');
+                optCustom.value = selectedVal;
+                optCustom.textContent = selectedVal;
+                optCustom.selected = true;
+                classSelect.appendChild(optCustom);
+            }
+        }
+
+        if (majorSelect) {
+            majorSelect.addEventListener('change', function() {
+                populateEditClassOptions(this.value, classSelect ? classSelect.value : '');
+            });
+        }
+
+        populateEditClassOptions(majorSelect ? majorSelect.value : '', @json(old('class_name', $petugas->class_name ?? '')));
+    });
+</script>
+
 @endsection

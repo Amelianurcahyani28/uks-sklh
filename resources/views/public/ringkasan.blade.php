@@ -4,7 +4,7 @@
 <main class="space-y-16 pb-16">
     <!-- Hero Section Full Width: Menempel langsung di bawah navbar seperti Beranda -->
     <section class="w-full bg-emerald-600 dark:bg-emerald-900 border-b border-transparent dark:border-emerald-700/60 text-white shadow-xl overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
+        <div class="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
             <div class="max-w-3xl space-y-5 text-left">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 dark:bg-emerald-800/80 border border-white/25 dark:border-emerald-600/40 text-white dark:text-emerald-200 text-xs font-bold shadow-sm backdrop-blur-md">
                     <span class="h-2 w-2 rounded-full bg-white animate-pulse"></span>
@@ -36,7 +36,7 @@
     </section>
 
     <!-- Konten Ringkasan Dalam Container Rapi -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <div class="w-full px-4 sm:px-6 lg:px-8 space-y-8">
         <!-- 3 Kartu Metrik Utama (Dapat Diklik untuk Membuka Datanya) -->
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-5">
         <!-- 1. Kunjungan Hari Ini -->
@@ -167,12 +167,12 @@
             </div>
 
             <!-- Form Pencarian Cepat -->
-            <form method="GET" action="{{ route('public.ringkasan') }}" class="flex items-center gap-2 w-full md:w-auto">
+            <form method="GET" action="{{ route('public.ringkasan') }}" autocomplete="off" class="flex items-center gap-2 w-full md:w-auto">
                 <input type="hidden" name="filter" value="{{ $activeFilter }}">
                 @if ($activeStatus)
                     <input type="hidden" name="status" value="{{ $activeStatus }}">
                 @endif
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ $activeFilter === 'students' ? 'Cari nama, kelas...' : 'Cari siswa atau keluhan...' }}" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 w-full sm:w-64 flex-1 transition shadow-xs">
+                <input type="text" name="q" value="{{ request('q') }}" autocomplete="off" placeholder="{{ $activeFilter === 'students' ? 'Cari nama, kelas...' : 'Cari siswa atau keluhan...' }}" class="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 w-full sm:w-64 flex-1 transition shadow-xs">
                 <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/30 active:scale-95 transition shrink-0 cursor-pointer">
                     <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -295,13 +295,13 @@
                                         {{ $visit->student->major ?: '-' }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800" style="max-width: 200px;">
-                                    <p class="text-slate-800 dark:text-slate-200 font-medium text-xs leading-relaxed line-clamp-2" title="{{ $visit->complaint }}">
+                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 min-w-[160px]">
+                                    <p class="text-slate-800 dark:text-slate-200 font-medium text-xs leading-relaxed break-words" title="{{ $visit->complaint }}">
                                         {{ $visit->complaint }}
                                     </p>
                                 </td>
-                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800" style="max-width: 180px;">
-                                    <p class="text-slate-600 dark:text-slate-400 text-xs leading-relaxed line-clamp-2" title="{{ $visit->initial_treatment }}">
+                                <td class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 min-w-[150px]">
+                                    <p class="text-slate-600 dark:text-slate-400 text-xs leading-relaxed break-words" title="{{ $visit->initial_treatment }}">
                                         {{ $visit->initial_treatment ?: '-' }}
                                     </p>
                                 </td>
@@ -344,14 +344,12 @@
 </main>
 
 <style>
-    /* Explicit crisp borders for Ringkasan tables */
+    /* Clean seamless table styling inside card */
     .overflow-x-auto table {
-        border-collapse: separate !important;
-        border-spacing: 0 !important;
+        border-collapse: collapse !important;
         width: 100% !important;
-        border: 2px solid #94a3b8 !important;
-        border-radius: 14px !important;
-        overflow: hidden !important;
+        border: none !important;
+        border-radius: 0 !important;
     }
     .overflow-x-auto table th {
         background-color: #f1f5f9 !important;
@@ -373,9 +371,6 @@
     }
     .overflow-x-auto table tbody tr:hover td {
         background-color: #e2e8f0 !important;
-    }
-    html.dark .overflow-x-auto table {
-        border-color: #334155 !important;
     }
     html.dark .overflow-x-auto table th {
         background-color: #0f172a !important;

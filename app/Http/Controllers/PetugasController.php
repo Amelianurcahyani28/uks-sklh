@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Petugas;
 use App\Models\PetugasJadwal;
+use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,6 +27,8 @@ class PetugasController extends Controller
             $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
                     ->orWhere('role_title', 'like', "%{$keyword}%")
+                    ->orWhere('class_name', 'like', "%{$keyword}%")
+                    ->orWhere('major', 'like', "%{$keyword}%")
                     ->orWhere('phone', 'like', "%{$keyword}%")
                     ->orWhere('schedule', 'like', "%{$keyword}%");
             });
@@ -38,9 +41,11 @@ class PetugasController extends Controller
 
         return view('petugas.index', [
             'petugas' => $petugas,
+            'allStudents' => Student::orderBy('name')->get(['id', 'name', 'class_name', 'major', 'gender']),
             'totalCount' => Petugas::count(),
             'aktifCount' => Petugas::where('status', 'aktif')->count(),
             'nonaktifCount' => Petugas::where('status', 'nonaktif')->count(),
+            'daysList' => PetugasJadwal::daysList(),
         ]);
     }
 
@@ -50,6 +55,7 @@ class PetugasController extends Controller
     public function create(): View
     {
         return view('petugas.create', [
+            'allStudents' => Student::orderBy('name')->get(['id', 'name', 'class_name', 'major', 'gender']),
             'daysList' => PetugasJadwal::daysList(),
         ]);
     }
@@ -62,6 +68,8 @@ class PetugasController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'role_title' => ['required', 'string', 'max:255'],
+            'class_name' => ['nullable', 'string', 'max:50'],
+            'major' => ['nullable', 'string', 'max:100'],
             'gender' => ['required', 'in:L,P'],
             'phone' => ['nullable', 'string', 'max:30'],
             'piket_day' => ['nullable', 'integer', 'between:1,5'],
@@ -73,13 +81,17 @@ class PetugasController extends Controller
 
         $days = PetugasJadwal::daysList();
         $piketDay = ! empty($validated['piket_day']) ? (int) $validated['piket_day'] : null;
-        $shiftTime = ! empty($validated['shift_time']) ? trim($validated['shift_time']) : '07:30 - 15:30 WIB';
-        $room = ! empty($validated['room']) ? trim($validated['room']) : 'Ruang UKS Utama';
+        $shiftTime = ! empty($validated['shift_time']) ? trim($validated['shift_time']) : '06:30 - 15:00 WIB';
+        $room = ! empty($validated['room']) ? trim($validated['room']) : 'Ruang UKS';
 
         if ($piketDay && isset($days[$piketDay])) {
             $validated['schedule'] = $days[$piketDay]." ({$shiftTime})";
         } else {
             $validated['schedule'] = 'Sesuai Jam Operasional UKS';
+        }
+
+        if (! empty($validated['class_name']) && ! empty($validated['major'])) {
+            $validated['class_name'] = Petugas::formatClassNameWithMajor($validated['class_name'], $validated['major']);
         }
 
         $petugas = Petugas::create($validated);
@@ -125,6 +137,8 @@ class PetugasController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'role_title' => ['required', 'string', 'max:255'],
+            'class_name' => ['nullable', 'string', 'max:50'],
+            'major' => ['nullable', 'string', 'max:100'],
             'gender' => ['required', 'in:L,P'],
             'phone' => ['nullable', 'string', 'max:30'],
             'piket_day' => ['nullable', 'integer', 'between:1,5'],
@@ -136,13 +150,17 @@ class PetugasController extends Controller
 
         $days = PetugasJadwal::daysList();
         $piketDay = ! empty($validated['piket_day']) ? (int) $validated['piket_day'] : null;
-        $shiftTime = ! empty($validated['shift_time']) ? trim($validated['shift_time']) : '07:30 - 15:30 WIB';
-        $room = ! empty($validated['room']) ? trim($validated['room']) : 'Ruang UKS Utama';
+        $shiftTime = ! empty($validated['shift_time']) ? trim($validated['shift_time']) : '06:30 - 15:00 WIB';
+        $room = ! empty($validated['room']) ? trim($validated['room']) : 'Ruang UKS';
 
         if ($piketDay && isset($days[$piketDay])) {
             $validated['schedule'] = $days[$piketDay]." ({$shiftTime})";
         } else {
             $validated['schedule'] = 'Sesuai Jam Operasional UKS';
+        }
+
+        if (! empty($validated['class_name']) && ! empty($validated['major'])) {
+            $validated['class_name'] = Petugas::formatClassNameWithMajor($validated['class_name'], $validated['major']);
         }
 
         $petugas->update($validated);
@@ -198,9 +216,20 @@ class PetugasController extends Controller
         $allPetugas = Petugas::where('status', 'aktif')->orderBy('name')->get();
 
         $todayDayNumber = now()->dayOfWeekIso;
+        $allDays = PetugasJadwal::allDaysList();
+        $todayDayName = $allDays[$todayDayNumber] ?? 'Senin';
+        $isWeekday = $todayDayNumber >= 1 && $todayDayNumber <= 5;
+
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+        $todayFormatted = $todayDayName.', '.now()->day.' '.($monthNames[now()->month] ?? '').' '.now()->year;
+
         $todayJadwalCount = PetugasJadwal::where('day_number', $todayDayNumber)->where('status', 'aktif')->count();
 
-        // Siapkan jadwal per hari Senin - Jumat untuk visualisasi kartu mingguan
+        // Siapkan jadwal per hari Senin - Jumat
         $weeklyCards = [];
         $allJadwals = PetugasJadwal::with('petugas')->whereBetween('day_number', [1, 5])->orderBy('day_number')->get();
         foreach ($daysList as $num => $dayName) {
@@ -211,13 +240,19 @@ class PetugasController extends Controller
             ];
         }
 
+        $todayItems = $allJadwals->where('day_number', $todayDayNumber);
+
         return view('petugas.jadwal', [
             'jadwals' => $jadwals,
             'daysList' => $daysList,
             'selectedDay' => $selectedDay ? (int) $selectedDay : null,
             'allPetugas' => $allPetugas,
             'todayDayNumber' => $todayDayNumber,
+            'todayDayName' => $todayDayName,
+            'todayFormatted' => $todayFormatted,
+            'isWeekday' => $isWeekday,
             'todayJadwalCount' => $todayJadwalCount,
+            'todayItems' => $todayItems,
             'totalJadwal' => PetugasJadwal::whereBetween('day_number', [1, 5])->count(),
             'weeklyCards' => $weeklyCards,
         ]);
@@ -240,10 +275,14 @@ class PetugasController extends Controller
         $days = PetugasJadwal::daysList();
         $validated['day'] = $days[$validated['day_number']] ?? 'Senin';
         if (empty($validated['room'])) {
-            $validated['room'] = 'Ruang UKS Utama';
+            $validated['room'] = 'Ruang UKS';
         }
 
-        PetugasJadwal::create($validated);
+        $newJadwal = PetugasJadwal::create($validated);
+
+        if (! empty($validated['notes'])) {
+            $newJadwal->petugas?->update(['role_title' => $validated['notes']]);
+        }
 
         return redirect()->route('petugas.jadwal')->with('success', 'Jadwal piket petugas UKS berhasil ditambahkan.');
     }
@@ -265,10 +304,14 @@ class PetugasController extends Controller
         $days = PetugasJadwal::daysList();
         $validated['day'] = $days[$validated['day_number']] ?? 'Senin';
         if (empty($validated['room'])) {
-            $validated['room'] = 'Ruang UKS Utama';
+            $validated['room'] = 'Ruang UKS';
         }
 
         $jadwal->update($validated);
+
+        if (! empty($validated['notes'])) {
+            $jadwal->petugas?->update(['role_title' => $validated['notes']]);
+        }
 
         return redirect()->route('petugas.jadwal')->with('success', 'Jadwal piket petugas UKS berhasil diperbarui.');
     }

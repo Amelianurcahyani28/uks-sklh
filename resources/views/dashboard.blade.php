@@ -68,101 +68,116 @@
         </a>
     </div>
 
-    <!-- Section Jadwal Piket Petugas UKS (Senin – Jumat) Khusus Halaman Admin -->
-    <div class="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xs space-y-4">
+    <!-- Agenda Piket Harian (Khusus Hari Ini) -->
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xs space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
-                <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
-                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Jadwal Piket Mingguan
-                    </span>
-                    <span class="text-xs text-slate-400 font-medium">Senin – Jumat</span>
-                </div>
-                <h3 class="text-base font-extrabold text-slate-900 dark:text-white mt-1">
-                    Jadwal Piket Petugas UKS (Senin – Jumat)
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-teal-50 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 mb-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Agenda Piket Hari Ini
+                </span>
+                <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>Jadwal Piket Petugas UKS — Hari {{ $todayDayName }}</span>
+                    @if($isWeekday)
+                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                            {{ $todayItems->count() }} Petugas
+                        </span>
+                    @endif
                 </h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Daftar penugasan piket petugas jaga UKS selama hari sekolah aktif. Petugas piket hari ini otomatis tampil di Beranda publik.
-                </p>
             </div>
-
-            <a href="{{ route('petugas.jadwal') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition border border-slate-200 dark:border-slate-700 shrink-0">
-                <svg class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-                <span>Kelola Jadwal Lengkap</span>
-                <span>→</span>
-            </a>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    📅 {{ $todayFormatted }}
+                </span>
+                <a href="{{ route('petugas.jadwal') }}" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 shrink-0">
+                    <svg class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <span>Kelola Jadwal Lengkap</span>
+                    <span>→</span>
+                </a>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 pt-1">
-            @foreach($daysList as $num => $dayName)
-                @php
-                    $isToday = $num === $todayDayNumber;
-                    $daySchedules = $seninJumatSchedules[$num] ?? collect();
-                @endphp
-                <div class="rounded-2xl border {{ $isToday ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 ring-2 ring-emerald-500/20' : 'border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/50' }} p-4 flex flex-col justify-between transition hover:shadow-sm">
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between pb-2 border-b {{ $isToday ? 'border-emerald-200 dark:border-emerald-800/80' : 'border-slate-200/80 dark:border-slate-800' }}">
-                            <span class="text-xs font-black {{ $isToday ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-200' }}">
-                                Hari {{ $dayName }}
-                            </span>
-                            @if($isToday)
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-600 text-white shadow-xs">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
-                                    <span>Hari Ini</span>
-                                </span>
-                            @endif
-                        </div>
+        @if($isWeekday)
+            @if($todayItems->isNotEmpty())
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-{{ min(count($todayItems), 4) }} gap-3.5">
+                    @foreach($todayItems as $item)
+                        @php $p = $item->petugas; @endphp
+                        @if($p)
+                            <div class="rounded-2xl border border-emerald-500 bg-emerald-50/30 dark:bg-emerald-950/20 ring-1 ring-emerald-500/20 p-4 flex flex-col justify-between transition hover:shadow-sm space-y-3">
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between pb-2 border-b border-emerald-200/80 dark:border-emerald-800/80">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-600 text-white shadow-xs">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
+                                            <span>Sedang Bertugas</span>
+                                        </span>
+                                        <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                                            {{ $item->room ?? 'Ruang UKS' }}
+                                        </span>
+                                    </div>
 
-                        <div class="space-y-2">
-                            @forelse($daySchedules as $item)
-                                @php $p = $item->petugas; @endphp
-                                @if($p)
-                                    <div class="space-y-1.5">
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-xl bg-gradient-to-br {{ $p->gender === 'L' ? 'from-teal-500 to-emerald-600' : 'from-rose-400 to-teal-600' }} text-white font-extrabold text-[11px] flex items-center justify-center shrink-0 shadow-xs">
-                                                {{ strtoupper(mb_substr($p->name, 0, 2)) }}
-                                            </div>
-                                            <div class="min-w-0">
-                                                <p class="text-xs font-extrabold text-slate-900 dark:text-white truncate" title="{{ $p->name }}">
-                                                    {{ $p->name }}
-                                                </p>
-                                                <p class="text-[10px] text-teal-600 dark:text-teal-400 font-semibold truncate">
-                                                    {{ $p->role_title }}
-                                                </p>
-                                            </div>
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-400 to-teal-600 text-white font-extrabold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                                            {{ strtoupper(mb_substr($p->name, 0, 2)) }}
                                         </div>
-
-                                        <div class="text-[10px] text-slate-500 dark:text-slate-400 space-y-0.5 pl-1 border-l-2 {{ $isToday ? 'border-emerald-500' : 'border-slate-300 dark:border-slate-700' }}">
-                                            <p class="font-bold text-slate-700 dark:text-slate-300">🕒 {{ $item->shift_time }}</p>
-                                            <p class="truncate">{{ $item->room ?? 'Ruang UKS Utama' }}</p>
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-extrabold text-slate-900 dark:text-white truncate" title="{{ $p->name }}">
+                                                {{ $p->name }}
+                                            </p>
+                                            <p class="text-[10px] text-teal-600 dark:text-teal-400 font-semibold truncate">
+                                                {{ $p->role_title }}
+                                            </p>
                                         </div>
                                     </div>
-                                @endif
-                            @empty
-                                <div class="py-3 text-center space-y-1">
-                                    <p class="text-[11px] text-slate-400 italic">Belum ada petugas</p>
-                                    <a href="{{ route('petugas.jadwal', ['day' => $num]) }}" class="text-[10px] font-bold text-teal-600 dark:text-teal-400 hover:underline">
-                                        + Jadwalkan
-                                    </a>
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
 
-                    @if($daySchedules->isNotEmpty())
-                        <div class="pt-2 border-t {{ $isToday ? 'border-emerald-200 dark:border-emerald-800/80' : 'border-slate-200/80 dark:border-slate-800' }} mt-2">
-                            <a href="{{ route('petugas.jadwal', ['day' => $num]) }}" class="text-[10px] font-bold text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center justify-between transition">
-                                <span>Ubah Jadwal</span>
-                                <span>→</span>
-                            </a>
-                        </div>
-                    @endif
+                                    <div class="text-[11px] space-y-1 text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900/90 p-2.5 rounded-xl border border-slate-200/70 dark:border-slate-800">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-emerald-600 dark:text-emerald-400 font-bold">🕒 Jam Piket:</span>
+                                            <span class="font-bold text-slate-900 dark:text-slate-200">{{ $item->shift_time }}</span>
+                                        </div>
+                                        @if($item->notes)
+                                            <p class="text-[10px] text-slate-500 dark:text-slate-400 italic">
+                                                "{{ $item->notes }}"
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <a href="{{ route('petugas.jadwal', ['day' => $todayDayNumber]) }}" class="w-full mt-1 py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-300 transition text-center cursor-pointer flex items-center justify-center gap-1 shadow-xs">
+                                    <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                    <span>Ubah Jadwal</span>
+                                </a>
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
-            @endforeach
-        </div>
+            @else
+                <div class="py-6 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-2">
+                    <p class="text-xs font-bold text-slate-600 dark:text-slate-400">
+                        Belum ada petugas yang dijadwalkan piket pada hari {{ $todayDayName }}.
+                    </p>
+                    <a href="{{ route('petugas.jadwal', ['day' => $todayDayNumber]) }}" class="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline cursor-pointer">
+                        + Jadwalkan Petugas Hari {{ $todayDayName }}
+                    </a>
+                </div>
+            @endif
+        @else
+            <!-- Akhir Pekan (Sabtu / Minggu) -->
+            <div class="py-6 text-center rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 space-y-1">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 mb-1">
+                    Libur Akhir Pekan
+                </span>
+                <p class="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Hari ini libur akhir pekan (Hari {{ $todayDayName }}). Tidak ada jadwal piket reguler.
+                </p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                    Pelayanan reguler piket UKS aktif kembali pada hari Senin s/d Jumat (06:30 – 15:00 WIB).
+                </p>
+            </div>
+        @endif
     </div>
 
     <!-- Bagian Filter Status Pasien Hari Ini -->
@@ -202,12 +217,12 @@
 
             <!-- Pencarian & Tombol Aksi Tambah (Anti-Overflow / Responsif) -->
             <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-                <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                <form method="GET" action="{{ route('dashboard') }}" autocomplete="off" class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                     @if ($activeStatus)
                         <input type="hidden" name="status" value="{{ $activeStatus }}">
                     @endif
                     <div class="relative">
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, kelas..." class="w-48 sm:w-56 lg:w-60 px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
+                        <input type="text" name="q" value="{{ request('q') }}" autocomplete="off" placeholder="Cari nama, kelas..." class="w-48 sm:w-56 lg:w-60 px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
                     </div>
                     <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/30 active:scale-95 transition shrink-0 cursor-pointer">
                         <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -218,13 +233,6 @@
                 </form>
 
                 <div class="flex flex-wrap items-center gap-2 shrink-0">
-                    <a href="{{ route('admin.kunjungan.export', ['period' => 'today']) }}" class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-3.5 py-2.5 text-xs font-bold text-white shadow-xs transition shrink-0" title="Unduh rekapitulasi kunjungan hari ini ke Excel">
-                        <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span>Export Excel Hari Ini</span>
-                    </a>
-
                     <a href="{{ route('kunjungan.create') }}" class="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 px-3.5 py-2.5 text-xs font-bold text-white shadow-xs transition shrink-0 cursor-pointer">
                         + Catat Kunjungan
                     </a>

@@ -203,9 +203,25 @@
             <!-- Main Content Area -->
             <main class="flex-1 overflow-y-auto overflow-x-hidden w-full flex flex-col">
                 @if (session('success'))
-                    <div class="mx-4 sm:mx-8 mt-4 p-4 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-xl shadow-xs text-xs font-semibold">
-                        {{ session('success') }}
+                    <div id="flash-success-alert" class="mx-4 sm:mx-8 mt-4 p-4 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-xl shadow-xs text-xs font-semibold flex items-center justify-between transition-all duration-300">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base font-bold text-emerald-600 dark:text-emerald-400">✓</span>
+                            <span>{{ session('success') }}</span>
+                        </div>
+                        <button type="button" onclick="dismissFlashAlert()" class="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-200 font-black text-sm ml-4 cursor-pointer" title="Tutup">✕</button>
                     </div>
+                    <script>
+                        function dismissFlashAlert() {
+                            const el = document.getElementById('flash-success-alert');
+                            if (el) {
+                                el.style.opacity = '0';
+                                el.style.transform = 'translateY(-8px)';
+                                setTimeout(() => el.remove(), 250);
+                            }
+                        }
+                        // Auto-dismiss cepat setelah 1 detik
+                        setTimeout(dismissFlashAlert, 1000);
+                    </script>
                 @endif
 
                 @yield('content')

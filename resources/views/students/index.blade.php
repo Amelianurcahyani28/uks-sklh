@@ -18,12 +18,7 @@
 </div>
 
 <div class="p-4 sm:p-8 space-y-6 flex-1">
-    @if (session('success'))
-        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between">
-            <span>✓ {{ session('success') }}</span>
-            <button type="button" onclick="this.parentElement.remove()" class="text-emerald-700 hover:text-emerald-900 font-bold ml-4">✕</button>
-        </div>
-    @endif
+
 
     @if ($errors->any())
         <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
@@ -38,8 +33,8 @@
 
     <!-- Bar Pencarian Cepat & Filter Status (Anti-Overflow / Responsif) -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-        <form method="GET" action="{{ route('students.index') }}" class="flex flex-wrap items-center gap-2">
-            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, kelas, keluhan..." class="w-48 sm:w-60 lg:w-64 px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
+        <form method="GET" action="{{ route('students.index') }}" autocomplete="off" class="flex flex-wrap items-center gap-2">
+            <input type="text" name="q" value="{{ request('q') }}" autocomplete="off" placeholder="Cari nama, kelas, keluhan..." class="w-48 sm:w-60 lg:w-64 px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
             
             <select name="status" class="px-3 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
                 <option value="">-- Semua Status --</option>

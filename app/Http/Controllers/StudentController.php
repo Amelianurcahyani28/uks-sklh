@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Petugas;
 use App\Models\Student;
 use App\Models\UksVisit;
 use Illuminate\Http\RedirectResponse;
@@ -66,10 +67,14 @@ class StudentController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'class_name' => ['required', 'string', 'max:30'],
+            'class_name' => ['required', 'string', 'max:50'],
             'major' => ['nullable', 'string', 'max:100'],
             'gender' => ['required', 'in:L,P'],
         ]);
+
+        if (! empty($validated['class_name']) && ! empty($validated['major'])) {
+            $validated['class_name'] = Petugas::formatClassNameWithMajor($validated['class_name'], $validated['major']);
+        }
 
         $validated['nis'] = 'NIS-'.strtoupper(uniqid());
 
@@ -95,10 +100,14 @@ class StudentController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'class_name' => ['required', 'string', 'max:30'],
+            'class_name' => ['required', 'string', 'max:50'],
             'major' => ['nullable', 'string', 'max:100'],
             'gender' => ['required', 'in:L,P'],
         ]);
+
+        if (! empty($validated['class_name']) && ! empty($validated['major'])) {
+            $validated['class_name'] = Petugas::formatClassNameWithMajor($validated['class_name'], $validated['major']);
+        }
 
         $student->update($validated);
 

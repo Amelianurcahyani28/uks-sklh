@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('petugas_id')->constrained('petugas')->cascadeOnDelete();
             $table->string('day');
             $table->unsignedTinyInteger('day_number');
-            $table->string('shift_time')->default('07:30 - 15:30 WIB');
-            $table->string('room')->default('Ruang UKS Utama');
+            $table->string('shift_time')->default('06:30 - 15:00 WIB');
+            $table->string('room')->default('Ruang UKS');
             $table->string('notes')->nullable();
             $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->timestamps();

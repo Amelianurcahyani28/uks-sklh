@@ -18,12 +18,7 @@
 </div>
 
 <div class="p-4 sm:p-8 space-y-6 flex-1">
-    @if (session('success'))
-        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between">
-            <span>✓ {{ session('success') }}</span>
-            <button type="button" onclick="this.parentElement.remove()" class="text-emerald-700 hover:text-emerald-900 font-bold ml-4">✕</button>
-        </div>
-    @endif
+
 
     @if ($errors->any())
         <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
@@ -38,8 +33,8 @@
 
     <!-- Bar Pencarian Cepat & Tombol Aksi Tambah -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-        <form method="GET" action="{{ route('kunjungan.index') }}" class="flex items-center gap-2">
-            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama siswa, atau kelas..." class="w-56 sm:w-72 px-4 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
+        <form method="GET" action="{{ route('kunjungan.index') }}" autocomplete="off" class="flex items-center gap-2">
+            <input type="text" name="q" value="{{ request('q') }}" autocomplete="off" placeholder="Cari nama siswa, atau kelas..." class="w-56 sm:w-72 px-4 py-2.5 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-400 focus:border-teal-500 dark:focus:border-teal-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-teal-500/20 dark:focus:ring-teal-400/20 transition shadow-xs">
             <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-600/30 active:scale-95 transition shrink-0 cursor-pointer">
                 <svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -166,7 +161,7 @@
         </div>
 
         <!-- Modal Form -->
-        <form method="POST" action="{{ route('kunjungan.store') }}" class="p-6 space-y-5">
+        <form method="POST" action="{{ route('kunjungan.store') }}" autocomplete="off" class="p-6 space-y-5">
             @csrf
 
             <!-- Bagian 1: Identitas Siswa -->
@@ -198,7 +193,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Nama Siswa Baru</label>
-                            <input type="text" name="student_name" id="modal_student_name" value="{{ old('student_name') }}" placeholder="Contoh: Muhammad Rizki" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600">
+                            <input type="text" name="student_name" id="modal_student_name" list="modal_students_datalist" value="{{ old('student_name') }}" placeholder="Contoh: Muhammad Rizki" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600">
+                            <datalist id="modal_students_datalist">
+                                @foreach ($allStudents ?? [] as $st)
+                                    <option value="{{ $st->name }}">
+                                        Kelas {{ $st->class_name }}{{ $st->major ? ' (' . $st->major . ')' : '' }}
+                                    </option>
+                                @endforeach
+                            </datalist>
                         </div>
 
                         <div>
@@ -213,19 +215,21 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Kelas</label>
-                            <input type="text" name="class_name" id="modal_class_name" value="{{ old('class_name') }}" placeholder="Contoh: X PPLG 1" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600">
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Jurusan (Khusus SMK)</label>
+                            <select name="major" id="modal_major" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600 cursor-pointer">
+                                <option value="">-- Pilih Jurusan / Umum --</option>
+                                <option value="PPLG" @selected(old('major') === 'PPLG')>PPLG (Pengembangan Perangkat Lunak dan Gim)</option>
+                                <option value="BCF" @selected(old('major') === 'BCF')>BCF (Broadcasting dan Perfilman)</option>
+                                <option value="ANIM" @selected(old('major') === 'ANIM')>ANIM (Animasi)</option>
+                                <option value="TO" @selected(old('major') === 'TO')>TO (Teknik Otomotif)</option>
+                                <option value="TPFL" @selected(old('major') === 'TPFL')>TPFL (Teknik Pengelasan dan Fabrikasi Logam)</option>
+                            </select>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Jurusan</label>
-                            <select name="major" id="modal_major" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600">
-                                <option value="">-- Pilih Jurusan --</option>
-                                <option value="PPLG" @selected(old('major') === 'PPLG')>PPLG</option>
-                                <option value="BCF" @selected(old('major') === 'BCF')>BCF</option>
-                                <option value="ANIM" @selected(old('major') === 'ANIM')>ANIM</option>
-                                <option value="TO" @selected(old('major') === 'TO')>TO</option>
-                                <option value="TPFL" @selected(old('major') === 'TPFL')>TPFL</option>
+                            <label class="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">Kelas</label>
+                            <select name="class_name" id="modal_class_name" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 p-2 focus:border-teal-600 focus:ring-teal-600 cursor-pointer">
+                                <!-- Opsi kelas otomatis sesuai jurusan -->
                             </select>
                         </div>
                     </div>
@@ -307,10 +311,135 @@
         }
     });
 
-    @if (request()->query('tambah') || $errors->any())
-        document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalMajor = document.getElementById('modal_major');
+        const modalClass = document.getElementById('modal_class_name');
+        const modalStudentName = document.getElementById('modal_student_name');
+        const modalStudentId = document.getElementById('modal_student_id');
+        const modalGender = document.getElementById('modal_gender');
+        const allStudentsList = @json($allStudents ?? []);
+        const oldClassName = @json(old('class_name', ''));
+
+        const majorClasses = {
+            'PPLG': ['PPLG 1', 'PPLG 2', 'PPLG 3', 'PPLG 4'],
+            'BCF': ['BCF 1', 'BCF 2', 'BCF 3', 'BCF 4'],
+            'ANIM': ['ANIM 1', 'ANIM 2', 'ANIM 3', 'ANIM 4'],
+            'TO': ['TO 1', 'TO 2', 'TO 3', 'TO 4'],
+            'TPFL': ['TPFL 1', 'TPFL 2', 'TPFL 3', 'TPFL 4'],
+        };
+
+        function cleanString(str) {
+            return (str || '').replace(/[\s\-_]/g, '').toUpperCase();
+        }
+
+        function populateModalClassOptions(major, selectedVal) {
+            if (!modalClass) return;
+            modalClass.innerHTML = '';
+
+            if (!major || !majorClasses[major]) {
+                const optNone = document.createElement('option');
+                optNone.value = '';
+                optNone.textContent = '-- Pilih Kelas / Umum --';
+                modalClass.appendChild(optNone);
+
+                const optStrip = document.createElement('option');
+                optStrip.value = '-';
+                optStrip.textContent = '- (Bukan Siswa / Guru / Staf)';
+                modalClass.appendChild(optStrip);
+
+                const umumLevels = ['X', 'XI', 'XII'];
+                umumLevels.forEach(lvl => {
+                    const group = document.createElement('optgroup');
+                    group.label = `Kelas ${lvl}`;
+                    [1, 2, 3, 4].forEach(num => {
+                        const opt = document.createElement('option');
+                        opt.value = `${lvl} ${num}`;
+                        opt.textContent = `${lvl} ${num}`;
+                        if (cleanString(selectedVal) === cleanString(`${lvl} ${num}`)) {
+                            opt.selected = true;
+                        }
+                        group.appendChild(opt);
+                    });
+                    modalClass.appendChild(group);
+                });
+
+                if (selectedVal && selectedVal !== '-' && selectedVal !== '') {
+                    const targetClean = cleanString(selectedVal);
+                    let foundExisting = Array.from(modalClass.options).some(o => cleanString(o.value) === targetClean);
+                    if (!foundExisting) {
+                        const optCustom = document.createElement('option');
+                        optCustom.value = selectedVal;
+                        optCustom.textContent = selectedVal;
+                        optCustom.selected = true;
+                        modalClass.appendChild(optCustom);
+                    }
+                } else if (selectedVal === '-') {
+                    optStrip.selected = true;
+                }
+                return;
+            }
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = `-- Pilih Kelas ${major} --`;
+            modalClass.appendChild(placeholder);
+
+            const levels = ['X', 'XI', 'XII'];
+            const targetClean = cleanString(selectedVal);
+            let matched = false;
+
+            levels.forEach(lvl => {
+                const optGroup = document.createElement('optgroup');
+                optGroup.label = `Kelas ${lvl}`;
+
+                majorClasses[major].forEach(rombel => {
+                    const fullClassName = `${lvl} ${rombel}`;
+                    const opt = document.createElement('option');
+                    opt.value = fullClassName;
+                    opt.textContent = fullClassName;
+
+                    if (targetClean && (cleanString(fullClassName) === targetClean || targetClean === cleanString(`${lvl}${rombel}`))) {
+                        opt.selected = true;
+                        matched = true;
+                    }
+
+                    optGroup.appendChild(opt);
+                });
+
+                modalClass.appendChild(optGroup);
+            });
+
+            if (selectedVal && !matched && selectedVal !== '-') {
+                const optCustom = document.createElement('option');
+                optCustom.value = selectedVal;
+                optCustom.textContent = `${selectedVal} (Tersimpan)`;
+                optCustom.selected = true;
+                modalClass.appendChild(optCustom);
+            }
+        }
+
+        if (modalMajor && modalClass) {
+            populateModalClassOptions(modalMajor.value, oldClassName);
+            modalMajor.addEventListener('change', function () {
+                populateModalClassOptions(this.value, '');
+            });
+        }
+
+        if (modalStudentName) {
+            modalStudentName.addEventListener('input', function () {
+                const val = this.value.trim().toLowerCase();
+                const found = allStudentsList.find(s => s.name.toLowerCase() === val);
+                if (found) {
+                    if (modalGender && found.gender) modalGender.value = found.gender;
+                    if (modalMajor && found.major) modalMajor.value = found.major;
+                    populateModalClassOptions(modalMajor ? modalMajor.value : '', found.class_name || '');
+                }
+            });
+        }
+
+        @if (request()->query('tambah') || $errors->any())
             openCatatModal();
-        });
-    @endif
+        @endif
+    });
 </script>
 @endsection

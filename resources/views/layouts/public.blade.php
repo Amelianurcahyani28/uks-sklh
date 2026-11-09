@@ -74,7 +74,7 @@
 
     <!-- Navbar Publik Modern (Mendukung Mode Terang & Gelap Senada dengan Admin) -->
     <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-200 shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-full px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-24">
                 <!-- Brand / Logo -->
                 <a href="{{ route('home') }}" class="flex items-center space-x-3 group">
@@ -150,16 +150,30 @@
     </header>
 
     @if (session('success'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
-            <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-3">
-                <span class="text-base">✓</span>
-                <span>{{ session('success') }}</span>
+        <div id="flash-public-success" class="w-full px-4 sm:px-6 lg:px-8 mt-4 transition-all duration-300">
+            <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold flex items-center justify-between shadow-xs">
+                <div class="flex items-center gap-3">
+                    <span class="text-base font-bold">✓</span>
+                    <span>{{ session('success') }}</span>
+                </div>
+                <button type="button" onclick="dismissPublicFlash()" class="text-emerald-700 dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 font-black text-sm ml-4 cursor-pointer" title="Tutup">✕</button>
             </div>
         </div>
+        <script>
+            function dismissPublicFlash() {
+                const el = document.getElementById('flash-public-success');
+                if (el) {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(-8px)';
+                    setTimeout(() => el.remove(), 250);
+                }
+            }
+            setTimeout(dismissPublicFlash, 1000);
+        </script>
     @endif
 
     @if (isset($errors) && $errors->any())
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+        <div class="w-full px-4 sm:px-6 lg:px-8 mt-4">
             <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-3">
                 <span class="text-base">✕</span>
                 <span>Periksa kembali kelengkapan formulir Anda.</span>
@@ -174,7 +188,7 @@
 
     <!-- Footer Modern (Dark Slate) -->
     <footer class="bg-slate-950 text-slate-400 border-t border-slate-800/80 mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div class="w-full px-4 sm:px-6 lg:px-8 py-12 md:py-16">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                 <!-- Kolom 1: Brand -->
                 <div class="md:col-span-2 space-y-4">
